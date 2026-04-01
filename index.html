@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lou Malnati's — FedEx Perishable Weather Alert</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f0f2f5;color:#222;min-height:100vh}
+a{color:#4D148C}
+header{background:#4D148C;color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+header h1{font-size:1.2rem;font-weight:700}
+header .sub{font-size:0.72rem;opacity:.85;margin-top:2px}
+.hdr-right{text-align:right}
+.last-upd{font-size:0.72rem;opacity:.72}
+.origin-bar{background:#FF6600;color:#fff;padding:8px 24px;font-size:0.8rem;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.origin-bar span{opacity:.9;font-weight:400}
+.btn{display:inline-block;padding:6px 14px;border-radius:5px;font-size:0.78rem;font-weight:700;cursor:pointer;border:none;white-space:nowrap}
+.btn-purple{background:#4D148C;color:#fff}.btn-purple:hover{background:#3a0f6e}
+.btn-orange{background:#E26B0A;color:#fff}.btn-orange:hover{background:#c45a08}
+.btn-green{background:#107C41;color:#fff}.btn-green:hover{background:#0d6435}
+.btn-sm{padding:4px 10px;font-size:0.72rem}
+.btn-ghost{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.35)}.btn-ghost:hover{background:rgba(255,255,255,.25)}
+.tab-bar{background:#243F60;display:flex;overflow-x:auto;padding:0 24px}
+.tab{padding:11px 16px;color:#aac4e0;font-size:0.8rem;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tab.active{color:#fff;border-bottom-color:#FF6600}
+.tab:hover{color:#fff}
+.pane{display:none;padding:16px 24px 30px}
+.pane.active{display:block}
+.kpi-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.kpi{flex:1;min-width:110px;background:#fff;border-radius:8px;padding:12px 10px;box-shadow:0 1px 4px rgba(0,0,0,.10);text-align:center}
+.kpi .num{font-size:1.8rem;font-weight:700;color:#4D148C}
+.kpi .lbl{font-size:0.64rem;color:#666;text-transform:uppercase;letter-spacing:.4px;margin-top:2px;line-height:1.3}
+.kpi.red .num{color:#C00000}.kpi.orange .num{color:#E26B0A}.kpi.gold .num{color:#B8860B}
+.sec-hdr{font-size:0.8rem;font-weight:700;color:#fff;background:#1F3864;padding:8px 14px;border-radius:6px 6px 0 0;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.sec-body{background:#fff;border-radius:0 0 6px 6px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden;margin-bottom:14px}
+.alert-card{border-left:5px solid #ccc;background:#fff;border-radius:6px;margin-bottom:7px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.ac-hdr{display:flex;align-items:flex-start;justify-content:space-between;padding:11px 14px 8px;gap:10px;flex-wrap:wrap;cursor:pointer}
+.ac-hdr:hover{background:#fafafa}
+.ac-title{font-size:0.88rem;font-weight:700}
+.ac-meta{font-size:0.7rem;color:#666;margin-top:2px}
+.ac-body{padding:0 14px 12px;font-size:0.78rem;color:#444;line-height:1.65;display:none}
+.ac-body.open{display:block}
+.ac-field{margin-bottom:4px}
+.chevron{transition:transform .2s;display:inline-block;font-size:0.68rem}
+.chevron.open{transform:rotate(180deg)}
+.badge{display:inline-block;padding:3px 9px;border-radius:10px;font-size:0.67rem;font-weight:700;white-space:nowrap;text-transform:uppercase}
+.b-extreme{background:#C00000;color:#fff}.b-high{background:#E26B0A;color:#fff}
+.b-modhi{background:#F4B942;color:#333}.b-low{background:#e0e0e0;color:#555}
+.b-delayed{background:#E26B0A;color:#fff}.b-impacted{background:#F4B942;color:#333}
+.b-suspended{background:#C00000;color:#fff}.b-ok{background:#107C41;color:#fff}
+.b-enhanced{background:#FF6600;color:#fff}.b-secondary{background:#7CB518;color:#fff}
+.b-slight{background:#B8860B;color:#fff}
+.b-peri-crit{background:#C00000;color:#fff}.b-peri-high{background:#E26B0A;color:#fff}
+.b-peri-mod{background:#F4B942;color:#333}.b-peri-low{background:#107C41;color:#fff}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:0.77rem}
+thead tr{background:#1F3864;color:#fff}
+th{padding:8px 9px;text-align:left;font-size:0.7rem;font-weight:700;white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{background:#2F5496}
+td{padding:6px 9px;border-bottom:1px solid #eee;vertical-align:middle}
+tr.even{background:#f8f9fc}
+tr:hover td{background:#f0f4ff}
+td.center{text-align:center}
+.td-note{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctrl-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:9px 12px;background:#f5f7fa;border-bottom:1px solid #e0e0e0}
+.ctrl-bar input,.ctrl-bar select{padding:5px 9px;border:1px solid #ccc;border-radius:5px;font-size:0.77rem}
+.ctrl-bar label{font-size:0.73rem;color:#555;font-weight:700}
+.state-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:7px;padding:14px;background:#fff;border-radius:0 0 6px 6px}
+.sc{border-radius:5px;padding:8px 4px;text-align:center;font-size:0.72rem;font-weight:700;cursor:default}
+.sc .ab{font-size:0.92rem}.sc .si{font-size:0.58rem;margin-top:2px;opacity:.85;font-weight:400;line-height:1.3}
+.sc.extreme{background:#C00000;color:#fff}.sc.high{background:#E26B0A;color:#fff}
+.sc.modhi{background:#F4B942;color:#333}.sc.none{background:#eee;color:#aaa}
+.bar-wrap{padding:14px;background:#fff;border-radius:0 0 6px 6px}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:0.75rem}
+.bar-lbl{width:120px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
+.bar-bg{flex:1;background:#eee;border-radius:3px;height:20px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:6px;font-size:0.68rem;font-weight:700;color:#fff;min-width:36px}
+.fedex-banner{background:#243F60;color:#fff;border-radius:6px;padding:11px 14px;margin-bottom:10px;font-size:0.8rem;display:flex;align-items:flex-start;gap:10px}
+.fedex-banner a{color:#7EC8E3}
+.perishable-note{background:#fff3cd;border:1px solid #ffc107;border-radius:6px;padding:10px 14px;font-size:0.78rem;margin-bottom:10px;color:#664d03}
+.spinner{width:26px;height:26px;border:3px solid #e0e0e0;border-top:3px solid #4D148C;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading{text-align:center;padding:28px;color:#888;font-size:0.85rem}
+.nodata{text-align:center;padding:22px;color:#aaa;font-size:0.85rem}
+.disclaimer{font-size:0.67rem;color:#999;padding:6px 24px 20px;line-height:1.6}
+@media(max-width:600px){.pane{padding:10px 12px 20px}.kpi .num{font-size:1.4rem}header h1{font-size:1rem}}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🍕 Lou Malnati's — FedEx Perishable Shipping Alert</h1>
+    <div class="sub">Severe weather · Chicago-origin shipments · Express &amp; Ground perishable only · Live NOAA data</div>
+  </div>
+  <div class="hdr-right">
+    <div class="last-upd" id="lastUpdated">Loading...</div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="loadAll()">↻ Refresh</button>
+  </div>
+</header>
+
+<div class="origin-bar">
+  📍 Chicago Metro Origin &nbsp;|&nbsp;
+  <span>All shipments depart from Chicago, IL · FedEx Ground &amp; Express · Perishable food items (pizza) · Transit windows critical — delays = spoilage risk</span>
+</div>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="showTab('dashboard')">📊 Dashboard</div>
+  <div class="tab" onclick="showTab('zips')">📍 ZIP Codes</div>
+  <div class="tab" onclick="showTab('states')">🗺 State Summary</div>
+  <div class="tab" onclick="showTab('map')">🌎 Impact Map</div>
+  <div class="tab" onclick="showTab('chart')">📈 Perishable Risk</div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="pane active" id="pane-dashboard">
+
+  <div class="perishable-note">
+    ⚠️ <strong>Perishable Shipping Advisory:</strong> Lou Malnati's ships frozen/refrigerated pizza from Chicago. Any FedEx delay in the states below creates spoilage risk.
+    Express shipments must arrive within the guaranteed window. Ground shipments have tighter tolerance. Contact FedEx at <strong>1-800-463-3339</strong> to hold or reroute affected packages.
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi red"><div class="num" id="k-crit">3</div><div class="lbl">Critical Perishable Risk States</div></div>
+    <div class="kpi orange"><div class="num" id="k-high">9</div><div class="lbl">High Perishable Risk States</div></div>
+    <div class="kpi gold"><div class="num">12</div><div class="lbl">Total Affected States</div></div>
+    <div class="kpi"><div class="num">87</div><div class="lbl">ZIP Codes Tracked</div></div>
+    <div class="kpi orange"><div class="num" id="k-live">–</div><div class="lbl">Live NOAA Active Alerts</div></div>
+  </div>
+
+  <div class="sec-hdr">FedEx Service Status — Chicago Origin Routes</div>
+  <div class="sec-body">
+    <div class="fedex-banner" id="fedex-banner">
+      <span style="font-size:1.3rem;flex-shrink:0">📦</span>
+      <div>Checking live NOAA alert status for Chicago-origin routes…
+        For confirmed day-of status visit <a href="https://www.fedex.com/en-us/service-alerts.html" target="_blank">fedex.com/service-alerts</a>
+        or use the <a href="https://www.fedex.com/en-us/shipping/current-operational-impacts.html" target="_blank">ZIP lookup tool</a>.
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-hdr">7-Day Outlook — Chicago Route Impact (Confirmed NOAA Data, Mar 31 2026)</div>
+  <div class="sec-body">
+    <table>
+      <thead><tr><th>Event</th><th>NOAA Risk</th><th>Affected States</th><th>Primary Hazards</th><th>Peak Window</th><th>Express Impact</th><th>Ground Impact</th><th>Perishable Risk</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Apr 1 Enhanced Risk</strong></td>
+          <td><span class="badge b-enhanced">ENHANCED</span></td>
+          <td>OK, KS, N TX</td>
+          <td>Supercells · 5% tornado · 30% damaging wind · Large hail</td>
+          <td style="white-space:nowrap;font-size:0.72rem">Wed Apr 1 12PM CDT<br>– Thu Apr 2 7AM CDT</td>
+          <td><span class="badge b-delayed">POSS. DELAY</span></td>
+          <td><span class="badge b-delayed">POSS. DELAY</span></td>
+          <td><span class="badge b-peri-crit">CRITICAL</span></td>
+        </tr>
+        <tr class="even">
+          <td><strong>Apr 1 Mid-Atlantic Wind</strong></td>
+          <td><span class="badge b-slight">SLIGHT</span></td>
+          <td>PA, MD, VA, OH, NJ, DE</td>
+          <td>Severe thunderstorms · 5% damaging wind · Heavy rain</td>
+          <td style="white-space:nowrap;font-size:0.72rem">Wed Apr 1 2PM EDT<br>– Thu Apr 2 6AM EDT</td>
+          <td><span class="badge b-impacted">POSS. IMPACT</span></td>
+          <td><span class="badge b-impacted">POSS. IMPACT</span></td>
+          <td><span class="badge b-peri-high">HIGH</span></td>
+        </tr>
+        <tr>
+          <td><strong>Apr 3 Secondary Signal</strong></td>
+          <td><span class="badge b-secondary">15% PROB</span></td>
+          <td>KS, NE, MO, IA</td>
+          <td>Severe thunderstorms · Tornado risk · Large hail</td>
+          <td style="white-space:nowrap;font-size:0.72rem">Fri Apr 3 8AM CDT<br>– Fri Apr 3 10PM CDT</td>
+          <td><span class="badge b-impacted">POSS. IMPACT</span></td>
+          <td><span class="badge b-impacted">POSS. IMPACT</span></td>
+          <td><span class="badge b-peri-mod">MODERATE</span></td>
+        </tr>
+        <tr class="even">
+          <td><strong>Apr 5+ Outlook</strong></td>
+          <td>—</td><td>Unknown</td><td>Predictability Too Low — insufficient model data</td>
+          <td>—</td><td>Monitor</td><td>Monitor</td><td>Monitor</td>
+        </tr>
+        <tr>
+          <td><strong>FedEx US Live Alerts</strong></td>
+          <td>—</td><td>None</td><td>No active US weather service alerts as of Mar 31, 2026</td>
+          <td>—</td>
+          <td><span class="badge b-ok">NORMAL</span></td>
+          <td><span class="badge b-ok">NORMAL</span></td>
+          <td><span class="badge b-peri-low">LOW</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec-hdr">Live NOAA Active Alerts <span style="font-weight:400;font-size:0.7rem;opacity:.75">(api.weather.gov — refreshed on load)</span></div>
+  <div class="sec-body" id="live-alerts-wrap">
+    <div class="loading"><div class="spinner"></div>Fetching live NOAA data…</div>
+  </div>
+
+  <div class="sec-hdr">Legend</div>
+  <div class="sec-body">
+    <table>
+      <thead><tr><th>Risk Level</th><th>FedEx Status</th><th>Interrup. Prob.</th><th>Transit from Chicago</th><th>Perishable Risk</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge b-high">HIGH</span></td><td><span class="badge b-delayed">POSS. DELAY</span></td><td>70–82%</td><td>1–4 days (Express 1–2 days)</td><td><span class="badge b-peri-crit">CRITICAL</span></td><td>Contact FedEx · Consider hold at facility · Alert customer</td></tr>
+        <tr class="even"><td><span class="badge b-modhi">MODERATE-HIGH</span></td><td><span class="badge b-impacted">POSS. IMPACT</span></td><td>48–65%</td><td>1–3 days (Express O/N–1 day)</td><td><span class="badge b-peri-high">HIGH</span></td><td>Monitor FedEx ZIP tool · Proactive customer communication</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ZIP CODES -->
+<div class="pane" id="pane-zips">
+  <div class="sec-hdr">
+    Affected ZIP Codes — Chicago-Origin Perishable Routes
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn btn-green btn-sm" onclick="exportCSV()">⬇ Export CSV</button>
+      <button class="btn btn-orange btn-sm" onclick="exportTSV()">⬇ Export TSV</button>
+    </div>
+  </div>
+  <div class="sec-body">
+    <div class="ctrl-bar">
+      <label>Search:</label>
+      <input type="text" id="zip-search" placeholder="ZIP, city, state…" oninput="filterZips()" style="width:160px">
+      <label>State:</label>
+      <select id="zip-state" onchange="filterZips()">
+        <option value="">All States</option>
+        <option>Oklahoma</option><option>Kansas</option><option>Texas</option>
+        <option>Pennsylvania</option><option>Maryland</option><option>Ohio</option>
+        <option>Virginia</option><option>New Jersey</option><option>Delaware</option>
+        <option>Nebraska</option><option>Missouri</option><option>Iowa</option>
+      </select>
+      <label>Service:</label>
+      <select id="zip-svc" onchange="filterZips()">
+        <option value="">Express + Ground</option>
+        <option value="express">Express Only</option>
+        <option value="ground">Ground Only</option>
+      </select>
+      <label>Perishable Risk:</label>
+      <select id="zip-peri" onchange="filterZips()">
+        <option value="">All</option>
+        <option value="CRITICAL">Critical</option>
+        <option value="HIGH">High</option>
+        <option value="MODERATE">Moderate</option>
+      </select>
+      <span id="zip-count" style="font-size:0.73rem;color:#666"></span>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th onclick="sortZips('zip')">ZIP ↕</th>
+          <th onclick="sortZips('city')">City ↕</th>
+          <th onclick="sortZips('abbr')">ST ↕</th>
+          <th onclick="sortZips('level')">Risk Level ↕</th>
+          <th>Weather Hazard</th>
+          <th onclick="sortZips('ground')">Ground ↕</th>
+          <th onclick="sortZips('express')">Express ↕</th>
+          <th onclick="sortZips('chiGround')">CHI→Ground Days ↕</th>
+          <th onclick="sortZips('chiExpress')">CHI→Express Days ↕</th>
+          <th onclick="sortZips('pct')">Interrup % ↕</th>
+          <th onclick="sortZips('periRisk')">Perishable Risk ↕</th>
+          <th onclick="sortZips('start')">Alert Start ↕</th>
+          <th onclick="sortZips('end')">Alert End ↕</th>
+          <th>Hub / Note</th>
+        </tr></thead>
+        <tbody id="zip-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- STATE SUMMARY -->
+<div class="pane" id="pane-states">
+  <div class="sec-hdr">State Summary — Chicago-Origin Perishable Impact</div>
+  <div class="sec-body">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>State</th><th>ST</th><th>Impact %</th><th>Risk Level</th>
+          <th>Weather Hazards</th><th>Ground</th><th>Express</th>
+          <th>Ground Days (CHI)</th><th>Express Days (CHI)</th>
+          <th>Interrup %</th><th>Perishable Risk</th><th>NOAA</th><th>Hub Note</th>
+        </tr></thead>
+        <tbody id="state-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MAP -->
+<div class="pane" id="pane-map">
+  <div class="sec-hdr">US Impact Map — Chicago-Origin Perishable Routes · 7-Day Outlook</div>
+  <div class="state-grid" id="map-grid"></div>
+  <div style="background:#fff;padding:10px 14px;border-top:1px solid #eee;font-size:0.71rem;color:#555;border-radius:0 0 6px 6px">
+    <strong>Legend:</strong>
+    <span class="badge b-high" style="margin:0 4px">HIGH</span> Enhanced NOAA risk · 70–82% interruption ·
+    <span class="badge b-modhi" style="margin:0 4px">MOD-HIGH</span> Broad zone / Day 4 secondary · 48–65% interruption ·
+    <span style="display:inline-block;padding:2px 7px;background:#eee;color:#aaa;border-radius:8px;font-size:0.65rem;font-weight:700;margin:0 4px">OK</span> No severe alert
+    <br><span style="margin-top:4px;display:block">Cell shows: Impact% | Ground days from CHI | Perishable risk</span>
+  </div>
+</div>
+
+<!-- CHART -->
+<div class="pane" id="pane-chart">
+  <div class="sec-hdr">Perishable Spoilage Risk by State — Chicago Origin</div>
+  <div class="bar-wrap" id="chart-bars"></div>
+  <div style="background:#fff;padding:0 14px 14px;font-size:0.72rem;color:#666;border-radius:0 0 6px 6px">
+    Perishable Risk Score = Interruption % × Transit Day Factor (longer ground transit = higher spoilage exposure)
+  </div>
+</div>
+
+<div class="disclaimer">
+  ⚠ Sources: NOAA Storm Prediction Center (spc.noaa.gov) · NOAA NWS API (api.weather.gov) · FedEx Service Alerts (fedex.com) ·
+  Severe alerts only (HIGH + MODERATE-HIGH) · Perishable risk based on Chicago-origin transit times + interruption probability ·
+  Confirm day-of status at <a href="https://www.fedex.com/en-us/service-alerts.html" target="_blank">fedex.com/service-alerts</a> ·
+  Lou Malnati's Pizzeria Logistics — Chicago, IL · Data as of Mar 31, 2026
+</div>
+
+<script>
+// ═══ CHICAGO TRANSIT TIMES (FedEx from Chicago, IL) ═══════
+// chiGround = standard ground days from Chicago
+// chiExpress = express days (1 = overnight, 2 = 2-day)
+// periRisk = CRITICAL / HIGH / MODERATE (based on transit + interruption exposure)
+const TRANSIT = {
+  OK: {chiGround:2, chiExpress:2, periRisk:'CRITICAL'},   // 2-day ground, EN risk zone
+  KS: {chiGround:2, chiExpress:1, periRisk:'CRITICAL'},   // 2-day ground, EN risk zone
+  TX: {chiGround:3, chiExpress:2, periRisk:'CRITICAL'},   // 3-day ground, EN risk zone
+  PA: {chiGround:2, chiExpress:1, periRisk:'HIGH'},
+  MD: {chiGround:2, chiExpress:1, periRisk:'HIGH'},
+  VA: {chiGround:2, chiExpress:1, periRisk:'HIGH'},
+  OH: {chiGround:1, chiExpress:1, periRisk:'HIGH'},       // OH is close — 1 day ground
+  NJ: {chiGround:2, chiExpress:1, periRisk:'HIGH'},
+  DE: {chiGround:2, chiExpress:1, periRisk:'HIGH'},
+  NE: {chiGround:2, chiExpress:1, periRisk:'MODERATE'},   // Day 4 secondary only
+  MO: {chiGround:1, chiExpress:1, periRisk:'MODERATE'},   // 1-day ground, Day 4
+  IA: {chiGround:1, chiExpress:1, periRisk:'MODERATE'},   // 1-day ground, Day 4
+};
+
+const PERI_CLR = {CRITICAL:'b-peri-crit', HIGH:'b-peri-high', MODERATE:'b-peri-mod', LOW:'b-peri-low'};
+const PERI_SCORE = {CRITICAL:3, HIGH:2, MODERATE:1};
+
+// ═══ DATA ════════════════════════════════════════════════
+const STATE_DATA = [
+  {state:"Oklahoma",abbr:"OK",impact:78,level:"HIGH",weather:"Supercell Thunderstorms / Tornado Risk (5%) / Large Hail / Damaging Winds 30%",noaa:"ENHANCED",ground:"DELAYED",express:"DELAYED",start:"Wed Apr 1  12:00 PM CDT",end:"Thu Apr 2  7:00 AM CDT",pct:78,note:"OKC & Tulsa in 5% tornado contour; Lawton & Enid in 30% wind core"},
+  {state:"Kansas",abbr:"KS",impact:75,level:"HIGH",weather:"Supercell / Tornado (5%) / Damaging Winds (30%) / Large Hail",noaa:"ENHANCED",ground:"DELAYED",express:"DELAYED",start:"Wed Apr 1  12:00 PM CDT",end:"Thu Apr 2  7:00 AM CDT",pct:76,note:"Wichita & Overland Park in 5% tornado + 30% wind — highest prob Apr 1"},
+  {state:"Texas",abbr:"TX",impact:68,level:"HIGH",weather:"Damaging Winds 30% (core) / Supercell / Large Hail / Tornado Risk",noaa:"ENHANCED",ground:"DELAYED",express:"DELAYED",start:"Wed Apr 1  12:00 PM CDT",end:"Thu Apr 2  7:00 AM CDT",pct:70,note:"Wichita Falls in 30% wind core; Dallas/FW in broad 5% wind zone"},
+  {state:"Virginia",abbr:"VA",impact:55,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Damaging Winds (5%) / Heavy Rain",noaa:"SLIGHT",ground:"IMPACTED",express:"IMPACTED",start:"Wed Apr 1  2:00 PM EDT",end:"Thu Apr 2  6:00 AM EDT",pct:57,note:"Richmond & NoVA corridors; Mid-Atlantic broad 5% wind zone"},
+  {state:"Maryland",abbr:"MD",impact:54,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Damaging Winds (5%) / Heavy Rain",noaa:"SLIGHT",ground:"IMPACTED",express:"IMPACTED",start:"Wed Apr 1  2:00 PM EDT",end:"Thu Apr 2  6:00 AM EDT",pct:56,note:"Baltimore in NOAA broad 5% wind zone; BWI FedEx monitoring"},
+  {state:"Pennsylvania",abbr:"PA",impact:53,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Damaging Winds (5%) / Heavy Rain",noaa:"SLIGHT",ground:"IMPACTED",express:"IMPACTED",start:"Wed Apr 1  2:00 PM EDT",end:"Thu Apr 2  6:00 AM EDT",pct:55,note:"Philadelphia in NOAA confirmed broad 5% wind contour"},
+  {state:"Ohio",abbr:"OH",impact:52,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Damaging Winds (5%) / Heavy Rain",noaa:"SLIGHT",ground:"IMPACTED",express:"IMPACTED",start:"Wed Apr 1  2:00 PM EDT",end:"Thu Apr 2  6:00 AM EDT",pct:54,note:"Columbus in broad 5% wind zone; 1-day ground from Chicago"},
+  {state:"New Jersey",abbr:"NJ",impact:50,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Damaging Winds / Heavy Rain",noaa:"SLIGHT",ground:"IMPACTED",express:"IMPACTED",start:"Wed Apr 1  3:00 PM EDT",end:"Thu Apr 2  5:00 AM EDT",pct:52,note:"Newark FedEx hub — Mid-Atlantic zone"},
+  {state:"Delaware",abbr:"DE",impact:48,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Damaging Winds / Heavy Rain",noaa:"SLIGHT",ground:"IMPACTED",express:"IMPACTED",start:"Wed Apr 1  3:00 PM EDT",end:"Thu Apr 2  5:00 AM EDT",pct:50,note:"Wilmington corridor in Mid-Atlantic broad zone"},
+  {state:"Nebraska",abbr:"NE",impact:60,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Tornado Risk / Large Hail (Day 4 15% signal)",noaa:"SECONDARY-15",ground:"IMPACTED",express:"DELAYED",start:"Fri Apr 3  8:00 AM CDT",end:"Fri Apr 3  10:00 PM CDT",pct:62,note:"Day 4 secondary; Omaha & Lincoln I-80 corridor"},
+  {state:"Missouri",abbr:"MO",impact:58,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Tornado Risk / Large Hail (Day 4 15% signal)",noaa:"SECONDARY-15",ground:"IMPACTED",express:"DELAYED",start:"Fri Apr 3  8:00 AM CDT",end:"Fri Apr 3  10:00 PM CDT",pct:60,note:"Day 4 secondary; KCMO & STL — 1-day ground from Chicago"},
+  {state:"Iowa",abbr:"IA",impact:56,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Tornado Risk / Large Hail (Day 4 15% signal)",noaa:"SECONDARY-15",ground:"IMPACTED",express:"IMPACTED",start:"Fri Apr 3  8:00 AM CDT",end:"Fri Apr 3  10:00 PM CDT",pct:58,note:"Day 4 secondary; Des Moines & Cedar Rapids — 1-day ground from Chicago"},
+];
+
+// ZIP: [zip,city,state,abbr,level,weather,ground,express,start,end,pct,days,note]
+const ZIP_DATA = [
+  ["73101","Oklahoma City","Oklahoma","OK","HIGH","Supercell / Tornado Risk 5% / Large Hail","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",80,2,"OKC in 5% tornado contour"],
+  ["73102","Oklahoma City","Oklahoma","OK","HIGH","Supercell / Tornado Risk 5% / Large Hail","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",80,2,"OKC metro storm initiation area"],
+  ["73103","Oklahoma City","Oklahoma","OK","HIGH","Supercell / Tornado Risk 5%","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",79,2,"OKC corridor"],
+  ["73104","Oklahoma City Downtown","Oklahoma","OK","HIGH","Supercell / Tornado Risk 5%","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",79,2,"Downtown OKC"],
+  ["73105","Oklahoma City","Oklahoma","OK","HIGH","Supercell / Tornado 5% / Damaging Winds","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",78,2,"OKC metro"],
+  ["73106","Oklahoma City","Oklahoma","OK","HIGH","Supercell / Tornado Risk 5%","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",78,2,"W OKC corridor"],
+  ["73107","Oklahoma City West","Oklahoma","OK","HIGH","Supercell / Tornado Risk 5%","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",77,2,"W OKC storm initiation zone"],
+  ["73109","Oklahoma City South","Oklahoma","OK","HIGH","Supercell / Tornado Risk 5%","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",77,2,"S OKC area"],
+  ["73110","Oklahoma City East","Oklahoma","OK","HIGH","Supercell / Damaging Winds","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",76,2,"E OKC metro"],
+  ["73112","Oklahoma City NW","Oklahoma","OK","HIGH","Supercell / Tornado Risk 5%","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",77,2,"NW OKC"],
+  ["74101","Tulsa","Oklahoma","OK","HIGH","Supercell / Tornado Risk 5% / Large Hail","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",78,2,"Tulsa in 5% tornado contour"],
+  ["74102","Tulsa","Oklahoma","OK","HIGH","Supercell / Large Hail","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",77,2,"Tulsa metro"],
+  ["74103","Tulsa Downtown","Oklahoma","OK","HIGH","Supercell / Tornado Risk 5%","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",77,2,"Downtown Tulsa"],
+  ["74104","Tulsa Midtown","Oklahoma","OK","HIGH","Supercell / Damaging Winds","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",76,2,"Midtown Tulsa"],
+  ["74105","Tulsa South","Oklahoma","OK","HIGH","Supercell / Tornado Risk","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",76,2,"S Tulsa corridor"],
+  ["73501","Lawton","Oklahoma","OK","HIGH","Damaging Winds 30% / Supercell / Large Hail","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",80,2,"Lawton in 30% damaging wind core"],
+  ["73701","Enid","Oklahoma","OK","HIGH","Damaging Winds 30% / Supercell / Large Hail","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",80,2,"Enid in 30% damaging wind core"],
+  ["73521","Altus","Oklahoma","OK","HIGH","Damaging Winds 30% / Supercell","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",79,2,"Altus in 30% wind core SW OK"],
+  ["67201","Wichita","Kansas","KS","HIGH","Supercell / Tornado 5% / Damaging Winds 30% / Large Hail","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",80,2,"Wichita in 5% tornado AND 30% wind contours"],
+  ["67202","Wichita Downtown","Kansas","KS","HIGH","Supercell / Tornado 5% / Damaging Winds 30%","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",80,2,"Downtown Wichita dual-threat zone"],
+  ["67203","Wichita","Kansas","KS","HIGH","Supercell / Tornado 5% / Damaging Winds","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",79,2,"Wichita metro"],
+  ["67204","Wichita North","Kansas","KS","HIGH","Supercell / Tornado 5%","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",78,2,"N Wichita"],
+  ["67205","Wichita NW","Kansas","KS","HIGH","Supercell / Tornado 5% / Large Hail","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",79,2,"NW Wichita storm initiation area"],
+  ["67206","Wichita East","Kansas","KS","HIGH","Supercell / Damaging Winds","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",77,2,"E Wichita"],
+  ["67207","Wichita SE","Kansas","KS","HIGH","Supercell / Tornado Risk","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",77,2,"SE Wichita"],
+  ["66101","Kansas City KS","Kansas","KS","HIGH","Supercell / Tornado 5% / Flash Flooding","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",78,2,"KCKS in 5% tornado contour"],
+  ["66102","Kansas City KS","Kansas","KS","HIGH","Supercell / Tornado 5%","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",78,2,"KCKS FedEx area"],
+  ["66103","Kansas City KS","Kansas","KS","HIGH","Supercell / Tornado 5%","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",77,2,"KCKS metro"],
+  ["66213","Overland Park","Kansas","KS","HIGH","Supercell / Tornado 5% / Damaging Winds","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",78,2,"Overland Park in 5% tornado contour"],
+  ["66214","Overland Park","Kansas","KS","HIGH","Supercell / Tornado 5%","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",77,2,"SW Overland Park"],
+  ["66502","Manhattan KS","Kansas","KS","HIGH","Supercell / Tornado Risk / Large Hail","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",76,2,"Manhattan KS central corridor"],
+  ["66601","Topeka","Kansas","KS","HIGH","Supercell / Tornado Risk / Severe Thunderstorms","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",75,2,"Topeka NE Kansas enhanced zone"],
+  ["76301","Wichita Falls","Texas","TX","HIGH","Damaging Winds 30% / Supercell / Tornado Risk / Large Hail","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",80,2,"Wichita Falls in 30% damaging wind core"],
+  ["76302","Wichita Falls","Texas","TX","HIGH","Damaging Winds 30% / Supercell / Large Hail","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",80,2,"Wichita Falls metro wind core"],
+  ["76308","Wichita Falls","Texas","TX","HIGH","Damaging Winds 30% / Supercell","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",79,2,"Wichita Falls S corridor"],
+  ["75201","Dallas","Texas","TX","HIGH","Severe Thunderstorms / Damaging Winds (5% broad) / Large Hail","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",68,2,"Dallas in NOAA broad 5% wind zone"],
+  ["75202","Dallas Downtown","Texas","TX","HIGH","Severe Thunderstorms / Damaging Winds","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",67,2,"Downtown Dallas freight hub"],
+  ["75203","Dallas","Texas","TX","HIGH","Severe Thunderstorms / Damaging Winds","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",67,2,"Dallas S corridor"],
+  ["75204","Dallas","Texas","TX","HIGH","Severe Thunderstorms / Damaging Winds","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",67,2,"Dallas metro area"],
+  ["76101","Fort Worth","Texas","TX","HIGH","Severe Thunderstorms / Damaging Winds (5% broad) / Large Hail","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",68,2,"Fort Worth in NOAA broad 5% wind zone"],
+  ["76102","Fort Worth Downtown","Texas","TX","HIGH","Severe Thunderstorms / Damaging Winds","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",67,2,"Downtown Fort Worth"],
+  ["76103","Fort Worth","Texas","TX","HIGH","Severe Thunderstorms / Damaging Winds","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",66,2,"East Fort Worth"],
+  ["76104","Fort Worth","Texas","TX","HIGH","Severe Thunderstorms / Damaging Winds","DELAYED","DELAYED","Wed Apr 1  12:00 PM CDT","Thu Apr 2  7:00 AM CDT",66,2,"S Fort Worth"],
+  ["19101","Philadelphia","Pennsylvania","PA","MODERATE-HIGH","Severe Thunderstorms / Damaging Winds (5%) / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",56,2,"Philadelphia in NOAA broad 5% wind contour"],
+  ["19102","Philadelphia","Pennsylvania","PA","MODERATE-HIGH","Severe Thunderstorms / Damaging Winds / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",55,2,"Center City Philadelphia"],
+  ["19103","Philadelphia","Pennsylvania","PA","MODERATE-HIGH","Severe Thunderstorms / Damaging Winds","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",54,2,"Rittenhouse/Logan Square"],
+  ["19104","Philadelphia W","Pennsylvania","PA","MODERATE-HIGH","Severe Thunderstorms / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",53,2,"W Philadelphia corridor"],
+  ["19106","Philadelphia","Pennsylvania","PA","MODERATE-HIGH","Severe Thunderstorms / Damaging Winds","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",54,2,"Old City / Penn's Landing"],
+  ["19107","Philadelphia","Pennsylvania","PA","MODERATE-HIGH","Severe Thunderstorms / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",53,2,"Center City East"],
+  ["19140","Philadelphia N","Pennsylvania","PA","MODERATE-HIGH","Severe Thunderstorms / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",52,2,"N Philadelphia distribution area"],
+  ["21201","Baltimore","Maryland","MD","MODERATE-HIGH","Severe Thunderstorms / Damaging Winds (5%) / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",57,2,"Baltimore in NOAA broad 5% wind contour"],
+  ["21202","Baltimore Downtown","Maryland","MD","MODERATE-HIGH","Severe Thunderstorms / Damaging Winds","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",56,2,"Downtown Baltimore Inner Harbor"],
+  ["21205","Baltimore East","Maryland","MD","MODERATE-HIGH","Severe Thunderstorms / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",55,2,"E Baltimore freight corridor"],
+  ["21217","Baltimore West","Maryland","MD","MODERATE-HIGH","Severe Thunderstorms / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",54,2,"W Baltimore area"],
+  ["21218","Baltimore","Maryland","MD","MODERATE-HIGH","Severe Thunderstorms / Damaging Winds","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",55,2,"Baltimore Waverly/Remington"],
+  ["43201","Columbus","Ohio","OH","MODERATE-HIGH","Severe Thunderstorms / Damaging Winds (5%) / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",55,2,"Columbus in NOAA broad 5% wind contour — 1-day ground from CHI"],
+  ["43202","Columbus N","Ohio","OH","MODERATE-HIGH","Severe Thunderstorms / Damaging Winds","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",54,2,"N Columbus corridor"],
+  ["43203","Columbus E","Ohio","OH","MODERATE-HIGH","Severe Thunderstorms / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",53,2,"E Columbus area"],
+  ["43204","Columbus W","Ohio","OH","MODERATE-HIGH","Severe Thunderstorms / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",53,2,"W Columbus distribution area"],
+  ["43205","Columbus SE","Ohio","OH","MODERATE-HIGH","Severe Thunderstorms / Damaging Winds","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",53,2,"SE Columbus"],
+  ["23219","Richmond","Virginia","VA","MODERATE-HIGH","Severe Thunderstorms / Damaging Winds / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",57,2,"Richmond Mid-Atlantic risk zone"],
+  ["23220","Richmond","Virginia","VA","MODERATE-HIGH","Severe Thunderstorms / Damaging Winds","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",56,2,"W Richmond corridor"],
+  ["22201","Arlington","Virginia","VA","MODERATE-HIGH","Severe Thunderstorms / Heavy Rain / Damaging Winds","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",57,2,"Arlington / Northern VA FedEx hub"],
+  ["22314","Alexandria","Virginia","VA","MODERATE-HIGH","Severe Thunderstorms / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  2:00 PM EDT","Thu Apr 2  6:00 AM EDT",56,2,"Alexandria I-95 corridor"],
+  ["07102","Newark","New Jersey","NJ","MODERATE-HIGH","Severe Thunderstorms / Damaging Winds / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  3:00 PM EDT","Thu Apr 2  5:00 AM EDT",53,2,"Newark FedEx hub Mid-Atlantic zone"],
+  ["07103","Newark","New Jersey","NJ","MODERATE-HIGH","Severe Thunderstorms / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  3:00 PM EDT","Thu Apr 2  5:00 AM EDT",52,2,"Newark metro area"],
+  ["08101","Camden","New Jersey","NJ","MODERATE-HIGH","Severe Thunderstorms / Damaging Winds","IMPACTED","IMPACTED","Wed Apr 1  3:00 PM EDT","Thu Apr 2  5:00 AM EDT",52,2,"Camden/Cherry Hill FedEx corridor"],
+  ["08033","Haddonfield","New Jersey","NJ","MODERATE-HIGH","Severe Thunderstorms / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  3:00 PM EDT","Thu Apr 2  5:00 AM EDT",50,2,"S Jersey distribution zone"],
+  ["19801","Wilmington","Delaware","DE","MODERATE-HIGH","Severe Thunderstorms / Damaging Winds / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  3:00 PM EDT","Thu Apr 2  5:00 AM EDT",51,2,"Wilmington Mid-Atlantic risk zone"],
+  ["19802","Wilmington N","Delaware","DE","MODERATE-HIGH","Severe Thunderstorms / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  3:00 PM EDT","Thu Apr 2  5:00 AM EDT",50,2,"N Wilmington area"],
+  ["19901","Dover","Delaware","DE","MODERATE-HIGH","Severe Thunderstorms / Heavy Rain","IMPACTED","IMPACTED","Wed Apr 1  3:00 PM EDT","Thu Apr 2  5:00 AM EDT",49,2,"Dover DE corridor"],
+  ["68101","Omaha","Nebraska","NE","MODERATE-HIGH","Severe Thunderstorms / Tornado Risk / Large Hail (Day 4)","IMPACTED","DELAYED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",63,1,"Omaha Day 4 secondary 15% signal"],
+  ["68102","Omaha Downtown","Nebraska","NE","MODERATE-HIGH","Severe Thunderstorms / Tornado Risk (Day 4)","IMPACTED","DELAYED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",62,1,"Downtown Omaha"],
+  ["68104","Omaha S","Nebraska","NE","MODERATE-HIGH","Severe Thunderstorms / Large Hail (Day 4)","IMPACTED","DELAYED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",61,1,"S Omaha distribution zone"],
+  ["68501","Lincoln","Nebraska","NE","MODERATE-HIGH","Severe Thunderstorms / Tornado Risk (Day 4)","IMPACTED","DELAYED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",62,1,"Lincoln Day 4 secondary zone"],
+  ["68502","Lincoln","Nebraska","NE","MODERATE-HIGH","Severe Thunderstorms / Large Hail (Day 4)","IMPACTED","DELAYED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",61,1,"S Lincoln corridor"],
+  ["64101","Kansas City MO","Missouri","MO","MODERATE-HIGH","Severe Thunderstorms / Tornado Risk / Large Hail (Day 4)","IMPACTED","DELAYED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",61,1,"KCMO Day 4 secondary — 1-day ground from CHI"],
+  ["64102","Kansas City MO Downtown","Missouri","MO","MODERATE-HIGH","Severe Thunderstorms / Tornado Risk (Day 4)","IMPACTED","DELAYED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",60,1,"Downtown KCMO"],
+  ["64108","Kansas City MO","Missouri","MO","MODERATE-HIGH","Severe Thunderstorms / Large Hail (Day 4)","IMPACTED","DELAYED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",60,1,"KCMO south corridor"],
+  ["64111","Kansas City MO Midtown","Missouri","MO","MODERATE-HIGH","Severe Thunderstorms (Day 4)","IMPACTED","DELAYED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",59,1,"KCMO midtown"],
+  ["63101","St. Louis","Missouri","MO","MODERATE-HIGH","Severe Thunderstorms / Tornado Risk (Day 4)","IMPACTED","DELAYED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",60,1,"STL Day 4 secondary zone"],
+  ["63102","St. Louis Downtown","Missouri","MO","MODERATE-HIGH","Severe Thunderstorms (Day 4)","IMPACTED","DELAYED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",60,1,"Downtown STL riverfront"],
+  ["63103","St. Louis","Missouri","MO","MODERATE-HIGH","Severe Thunderstorms / Large Hail (Day 4)","IMPACTED","DELAYED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",59,1,"STL metro"],
+  ["50301","Des Moines","Iowa","IA","MODERATE-HIGH","Severe Thunderstorms / Tornado Risk (Day 4)","IMPACTED","IMPACTED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",59,1,"Des Moines Day 4 secondary — 1-day ground from CHI"],
+  ["50302","Des Moines N","Iowa","IA","MODERATE-HIGH","Severe Thunderstorms / Large Hail (Day 4)","IMPACTED","IMPACTED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",58,1,"N Des Moines"],
+  ["50309","Des Moines Downtown","Iowa","IA","MODERATE-HIGH","Severe Thunderstorms (Day 4)","IMPACTED","IMPACTED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",58,1,"Downtown Des Moines"],
+  ["52401","Cedar Rapids","Iowa","IA","MODERATE-HIGH","Severe Thunderstorms / Tornado Risk (Day 4)","IMPACTED","IMPACTED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",58,1,"Cedar Rapids Day 4 secondary zone"],
+  ["52402","Cedar Rapids","Iowa","IA","MODERATE-HIGH","Severe Thunderstorms / Large Hail (Day 4)","IMPACTED","IMPACTED","Fri Apr 3  8:00 AM CDT","Fri Apr 3  10:00 PM CDT",57,1,"Cedar Rapids S corridor"],
+];
+
+// ═══ HELPERS ════════════════════════════════════════════
+const LVL_B={HIGH:'b-high','MODERATE-HIGH':'b-modhi',EXTREME:'b-extreme'};
+const STS_B={DELAYED:'b-delayed',IMPACTED:'b-impacted',SUSPENDED:'b-suspended',MONITORING:'b-low'};
+const STS_LBL={DELAYED:'POSS. DELAY',IMPACTED:'POSS. IMPACT',SUSPENDED:'SUSPENDED',MONITORING:'MONITORING'};
+const NOAA_B={ENHANCED:'b-enhanced',SLIGHT:'b-slight','SECONDARY-15':'b-secondary'};
+const BAR_C={HIGH:'#E26B0A','MODERATE-HIGH':'#F4B942',EXTREME:'#C00000'};
+
+function b(t,c){return`<span class="badge ${c||''}">${t}</span>`;}
+function bl(l){return b(l,LVL_B[l]||'b-low');}
+function bs(s){return b(STS_LBL[s]||s,STS_B[s]||'b-low');}
+function bn(n){return b(n,NOAA_B[n]||'b-low');}
+function bp(p){return b(p,PERI_CLR[p]||'b-low');}
+
+function periOfAbbr(abbr){return (TRANSIT[abbr]||{}).periRisk||'MODERATE';}
+
+// ═══ TABS ════════════════════════════════════════════════
+function showTab(t){
+  const names=['dashboard','zips','states','map','chart'];
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',names[i]===t));
+  document.querySelectorAll('.pane').forEach(el=>el.classList.remove('active'));
+  document.getElementById('pane-'+t).classList.add('active');
+}
+
+// ═══ ZIP TABLE ══════════════════════════════════════════
+let zipSort={col:'pct',dir:-1}, filteredZips=[];
+const COL={zip:0,city:1,state:2,abbr:3,level:4,ground:6,express:7,start:8,end:9,pct:10,days:11};
+
+function periFromRow(r){return periOfAbbr(r[3]);}
+function gDays(r){return (TRANSIT[r[3]]||{}).chiGround||'—';}
+function eDays(r){return (TRANSIT[r[3]]||{}).chiExpress||'—';}
+
+function renderZipTable(data){
+  filteredZips=data;
+  document.getElementById('zip-count').textContent=`Showing ${data.length} of ${ZIP_DATA.length} ZIPs`;
+  const tb=document.getElementById('zip-tbody');
+  if(!data.length){tb.innerHTML='<tr><td colspan="14" class="nodata">No ZIPs match filters.</td></tr>';return;}
+  tb.innerHTML=data.map((r,i)=>{
+    const pr=periFromRow(r);
+    return`<tr class="${i%2?'even':''}">
+      <td><strong>${r[0]}</strong></td>
+      <td>${r[1]}</td><td>${r[3]}</td>
+      <td>${bl(r[4])}</td>
+      <td style="font-size:0.7rem;max-width:180px">${r[5]}</td>
+      <td>${bs(r[6])}</td><td>${bs(r[7])}</td>
+      <td class="center">${gDays(r)} day${gDays(r)===1?'':'s'}</td>
+      <td class="center">${eDays(r)} day${eDays(r)===1?'':'s'}</td>
+      <td class="center"><strong>${r[10]}%</strong></td>
+      <td>${bp(pr)}</td>
+      <td style="white-space:nowrap;font-size:0.7rem">${r[8]}</td>
+      <td style="white-space:nowrap;font-size:0.7rem">${r[9]}</td>
+      <td class="td-note" title="${r[12]}" style="font-size:0.7rem">${r[12]}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterZips(){
+  const q=(document.getElementById('zip-search').value||'').toLowerCase();
+  const st=document.getElementById('zip-state').value;
+  const svc=document.getElementById('zip-svc').value;
+  const pr=document.getElementById('zip-peri').value;
+  let data=ZIP_DATA.filter(r=>{
+    if(st&&r[2]!==st)return false;
+    if(pr&&periFromRow(r)!==pr)return false;
+    if(svc==='express'&&r[7]==='IMPACTED'&&r[6]==='IMPACTED')return false; // skip ground-only impacted
+    if(svc==='ground'&&r[6]==='IMPACTED'&&r[7]==='DELAYED')return false;
+    if(q&&![r[0],r[1],r[2],r[3],r[5],r[12]].join(' ').toLowerCase().includes(q))return false;
+    return true;
+  });
+  data=sortZipData(data);
+  renderZipTable(data);
+}
+
+function sortZipData(data){
+  return[...data].sort((a,b_)=>{
+    let va,vb;
+    if(zipSort.col==='periRisk'){va=PERI_SCORE[periFromRow(a)]||0;vb=PERI_SCORE[periFromRow(b_)]||0;}
+    else if(zipSort.col==='chiGround'){va=gDays(a);vb=gDays(b_);}
+    else if(zipSort.col==='chiExpress'){va=eDays(a);vb=eDays(b_);}
+    else{const i=COL[zipSort.col]??10;va=a[i];vb=b_[i];}
+    if(typeof va==='number')return zipSort.dir*(va-vb);
+    return zipSort.dir*String(va).localeCompare(String(vb));
+  });
+}
+function sortZips(c){zipSort.col===c?zipSort.dir*=-1:(zipSort.col=c,zipSort.dir=1);filterZips();}
+
+// ═══ EXPORT ═════════════════════════════════════════════
+const HDRS=['ZIP','City','State','Abbr','Risk Level','Weather Hazard','FedEx Ground','FedEx Express',
+            'CHI Ground Days','CHI Express Days','Interruption %','Alert Days',
+            'Perishable Risk','Alert Start','Alert End','Hub / Note'];
+
+function rowToExport(r){
+  return[r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],
+         gDays(r),eDays(r),r[10]+'%',r[11],periFromRow(r),r[8],r[9],r[12]];
+}
+function exportCSV(){
+  const rows=[HDRS,...filteredZips.map(r=>rowToExport(r).map(v=>String(v).includes(',')?`"${v}"`:v))];
+  dl(new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'}),'LouMalnatis_FedEx_Weather_ZIPs.csv');
+}
+function exportTSV(){
+  const rows=[HDRS,...filteredZips.map(r=>rowToExport(r))];
+  dl(new Blob([rows.map(r=>r.join('\t')).join('\n')],{type:'text/tab-separated-values'}),'LouMalnatis_FedEx_Weather_ZIPs.tsv');
+}
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href);}
+
+// ═══ STATE TABLE ═════════════════════════════════════════
+function renderStates(){
+  document.getElementById('state-tbody').innerHTML=STATE_DATA.map((s,i)=>{
+    const tr=TRANSIT[s.abbr]||{};
+    return`<tr class="${i%2?'even':''}">
+      <td><strong>${s.state}</strong></td><td>${s.abbr}</td>
+      <td class="center"><strong>${s.impact}%</strong></td>
+      <td>${bl(s.level)}</td>
+      <td style="font-size:0.7rem;max-width:200px">${s.weather}</td>
+      <td>${bs(s.ground)}</td><td>${bs(s.express)}</td>
+      <td class="center">${tr.chiGround||'—'} day${tr.chiGround===1?'':'s'}</td>
+      <td class="center">${tr.chiExpress||'—'} day${tr.chiExpress===1?'':'s'}</td>
+      <td class="center"><strong>${s.pct}%</strong></td>
+      <td>${bp(tr.periRisk||'MODERATE')}</td>
+      <td>${bn(s.noaa)}</td>
+      <td class="td-note" style="font-size:0.7rem" title="${s.note}">${s.note}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══ MAP ═════════════════════════════════════════════════
+const ALL_ST=['WA','OR','CA','NV','ID','MT','WY','UT','AZ','CO','NM',
+  'ND','SD','NE','KS','MN','IA','MO','WI','IL','IN','MI',
+  'OH','KY','TN','MS','AL','GA','FL','SC','NC','VA','WV',
+  'PA','NY','ME','NH','VT','MA','RI','CT','NJ','DE','MD','DC',
+  'TX','LA','AR','OK','AK','HI'];
+
+function renderMap(){
+  const lk={};
+  STATE_DATA.forEach(s=>lk[s.abbr]=s);
+  document.getElementById('map-grid').innerHTML=ALL_ST.map(ab=>{
+    const s=lk[ab],tr=TRANSIT[ab]||{};
+    if(s){
+      const cls=s.level==='HIGH'?'high':'modhi';
+      const pr=tr.periRisk||'MODERATE';
+      const periMark=pr==='CRITICAL'?'🔴':pr==='HIGH'?'🟠':'🟡';
+      return`<div class="sc ${cls}" title="${s.state}\nImpact: ${s.impact}%\nGround from CHI: ${tr.chiGround||'?'}d\nPerishable: ${pr}">
+        <div class="ab">${ab}</div>
+        <div class="si">${s.impact}% · ${tr.chiGround||'?'}d gnd</div>
+        <div class="si">${periMark} ${pr}</div>
+      </div>`;
+    }
+    const isChi=ab==='IL';
+    return`<div class="sc none" style="${isChi?'background:#4D148C;color:#fff;':''}">
+      <div class="ab">${ab}</div>
+      <div class="si">${isChi?'📍 ORIGIN':'OK'}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══ CHART ═══════════════════════════════════════════════
+function renderChart(){
+  // Perishable Risk Score = interruption% × ground transit factor
+  const scored=STATE_DATA.map(s=>{
+    const tr=TRANSIT[s.abbr]||{chiGround:2};
+    const score=Math.round(s.pct*(1+((tr.chiGround||2)-1)*0.15));
+    return{...s,score,tr};
+  }).sort((a,b_)=>b_.score-a.score);
+  const max=scored[0].score;
+  document.getElementById('chart-bars').innerHTML=scored.map(s=>{
+    const w=Math.round(s.score/max*100);
+    const bg=BAR_C[s.level]||'#4D148C';
+    const pr=(TRANSIT[s.abbr]||{}).periRisk||'MODERATE';
+    return`<div class="bar-row">
+      <div class="bar-lbl" title="${s.state}">${s.state} (${s.abbr})</div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${w}%;background:${bg}">${s.score}</div></div>
+      <div style="width:90px;flex-shrink:0">${bp(pr)}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══ LIVE NOAA ═══════════════════════════════════════════
+function impactOf(sev,ev){
+  const e=(ev||'').toLowerCase();
+  if(sev==='Extreme')return{lbl:'EXTREME',status:'SUSPENDED',bc:'#C00000'};
+  if(sev==='Severe'){
+    if(e.includes('tornado')||e.includes('blizzard')||e.includes('ice'))return{lbl:'HIGH',status:'DELAYED',bc:'#E26B0A'};
+    return{lbl:'MODERATE-HIGH',status:'IMPACTED',bc:'#F4B942'};
+  }
+  return{lbl:'LOW',status:'MONITORING',bc:'#ccc'};
+}
+function xStates(a){
+  const US=new Set('AL,AK,AZ,AR,CA,CO,CT,DE,FL,GA,HI,ID,IL,IN,IA,KS,KY,LA,ME,MD,MA,MI,MN,MS,MO,MT,NE,NV,NH,NJ,NM,NY,NC,ND,OH,OK,OR,PA,RI,SC,SD,TN,TX,UT,VT,VA,WA,WV,WI,WY,DC'.split(','));
+  const s=new Set();
+  (a.properties.affectedZones||[]).forEach(z=>{const m=z.match(/\/([A-Z]{2})[ZC]\d/);if(m)s.add(m[1]);});
+  ((a.properties.areaDesc||'').match(/\b([A-Z]{2})\b/g)||[]).forEach(x=>{if(US.has(x))s.add(x);});
+  return[...s];
+}
+function fmtDt(iso){try{return new Date(iso).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'});}catch{return iso||'—';}}
+function tog(i){const b=document.getElementById('ab'+i),c=document.getElementById('ac'+i);if(b){b.classList.toggle('open');if(c)c.classList.toggle('open');}}
+
+async function loadLiveAlerts(){
+  const wrap=document.getElementById('live-alerts-wrap');
+  wrap.innerHTML='<div class="loading"><div class="spinner"></div>Fetching live NOAA data for Chicago-origin routes…</div>';
+  let data;
+  try{
+    const r=await fetch('https://api.weather.gov/alerts/active?status=actual&message_type=alert&urgency=Immediate,Expected&severity=Extreme,Severe',{headers:{'User-Agent':'LouMalnatis-FedExAlert/1.0'}});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    data=await r.json();
+  }catch(e){
+    wrap.innerHTML=`<div style="padding:12px"><div class="fedex-banner" style="background:#7f1c1c">⚠ Could not load live NOAA data: ${e.message}. Using embedded 7-day planning data above.</div></div>`;
+    return;
+  }
+  const alerts=data.features||[];
+  const extreme=alerts.filter(a=>a.properties.severity==='Extreme').length;
+  const severe=alerts.filter(a=>a.properties.severity==='Severe').length;
+  document.getElementById('k-live').textContent=alerts.length;
+  document.getElementById('lastUpdated').textContent='Updated: '+new Date().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'});
+
+  const fedexMsg=alerts.length===0
+    ?'✅ No active Extreme or Severe NOAA alerts. Embedded 7-day planning data above remains valid. Monitor fedex.com for any developing day-of issues.'
+    :`⚠ ${extreme} Extreme + ${severe} Severe active alerts affecting Chicago-origin routes. Check <a href="https://www.fedex.com/en-us/service-alerts.html" target="_blank">fedex.com/service-alerts</a> and use the ZIP lookup for perishable shipment status.`;
+  document.getElementById('fedex-banner').innerHTML=`<span style="font-size:1.3rem;flex-shrink:0">📦</span><div>${fedexMsg}</div>`;
+
+  if(!alerts.length){
+    wrap.innerHTML='<div style="padding:12px"><div class="fedex-banner" style="background:#107C41">✅ No active Extreme or Severe alerts at this time. Your Chicago-origin perishable routes are clear based on current NOAA data.</div></div>';
+    return;
+  }
+  alerts.sort((a,b_)=>(a.properties.severity==='Extreme'?0:1)-(b_.properties.severity==='Extreme'?0:1));
+  wrap.innerHTML=alerts.map((a,i)=>{
+    const p=a.properties,imp=impactOf(p.severity,p.event),sts=xStates(a);
+    const chaffected=sts.filter(s=>TRANSIT[s]);
+    return`<div class="alert-card" style="border-left-color:${imp.bc}">
+      <div class="ac-hdr" onclick="tog(${i})">
+        <div>
+          <div class="ac-title">${p.event||'Weather Alert'}</div>
+          <div class="ac-meta">${(p.areaDesc||'').substring(0,110)}${(p.areaDesc||'').length>110?'…':''}</div>
+          ${chaffected.length?`<div style="margin-top:4px;font-size:0.7rem;color:#C00000;font-weight:700">⚠ Affects Chicago routes: ${chaffected.join(', ')}</div>`:''}
+        </div>
+        <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
+          ${b(p.severity,p.severity==='Extreme'?'b-extreme':'b-high')}
+          ${b('FedEx: '+imp.status,imp.lbl==='HIGH'||imp.lbl==='EXTREME'?'b-delayed':'b-impacted')}
+          <span class="chevron" id="ac${i}">▼</span>
+        </div>
+      </div>
+      <div class="ac-body" id="ab${i}">
+        <div class="ac-field"><strong>⚡ Hazard:</strong> ${p.event}</div>
+        <div class="ac-field"><strong>🗺 States:</strong> ${sts.length?sts.join(', '):'See area description'}</div>
+        ${chaffected.length?`<div class="ac-field" style="color:#C00000"><strong>🍕 Chicago Routes Affected:</strong> ${chaffected.map(s=>`${s} (${(TRANSIT[s]||{}).chiGround||'?'}d ground)`).join(', ')}</div>`:'<div class="ac-field" style="color:#107C41"><strong>🍕 Chicago Routes:</strong> Not directly on tracked routes</div>'}
+        <div class="ac-field"><strong>📅 Onset:</strong> ${fmtDt(p.onset)}</div>
+        <div class="ac-field"><strong>📅 Expires:</strong> ${fmtDt(p.expires)}</div>
+        <div class="ac-field"><strong>🚚 FedEx Ground:</strong> ${imp.status} &nbsp;|&nbsp; <strong>✈ Express:</strong> ${imp.status}</div>
+        <div class="ac-field"><strong>📊 Interrup. Probability:</strong> ${imp.lbl==='EXTREME'?'85–95%':imp.lbl==='HIGH'?'70–82%':'55–70%'}</div>
+        <div class="ac-field"><strong>🏢 Issued by:</strong> ${p.senderName||'—'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══ INIT ════════════════════════════════════════════════
+function loadAll(){
+  const crit=STATE_DATA.filter(s=>(TRANSIT[s.abbr]||{}).periRisk==='CRITICAL').length;
+  const high=STATE_DATA.filter(s=>(TRANSIT[s.abbr]||{}).periRisk==='HIGH').length;
+  document.getElementById('k-crit').textContent=crit;
+  document.getElementById('k-high').textContent=high;
+  filterZips();
+  renderStates();
+  renderMap();
+  renderChart();
+  loadLiveAlerts();
+}
+loadAll();
+</script>
+</body>
+</html>
