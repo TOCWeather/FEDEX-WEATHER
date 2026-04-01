@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+(function(){
+  var k=sessionStorage.getItem('lm_auth');
+  if(k==='ok') return;
+  var attempt=0;
+  while(attempt<3){
+    var p=window.prompt('Lou Malnati\'s — Enter password to continue:','');
+    if(p===null){document.documentElement.innerHTML='';break;}
+    if(p==='TOCRocks!'){sessionStorage.setItem('lm_auth','ok');break;}
+    attempt++;
+    if(attempt<3) window.alert('Incorrect password. Try again.');
+    else{document.documentElement.innerHTML='<body style="font-family:Arial;text-align:center;padding:60px;color:#555"><h2>Access Denied</h2><p>Too many incorrect attempts. Close and reopen the page to try again.</p></body>';break;}
+  }
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lou Malnati's — FedEx Perishable Weather Alert</title>
