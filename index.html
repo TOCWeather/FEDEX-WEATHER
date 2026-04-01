@@ -155,7 +155,7 @@ td.center{text-align:center}
     </div>
   </div>
 
-  <div class="sec-hdr">7-Day Outlook — Chicago Route Impact (Confirmed NOAA Data, Mar 31 2026)</div>
+  <div class="sec-hdr">7-Day Outlook — Chicago Route Impact (Confirmed NOAA Data, Apr 1, 2026  08:01 PM UTC)</div>
   <div class="sec-body">
     <table>
       <thead><tr><th>Event</th><th>NOAA Risk</th><th>Affected States</th><th>Primary Hazards</th><th>Peak Window</th><th>Express Impact</th><th>Ground Impact</th><th>Perishable Risk</th></tr></thead>
@@ -325,7 +325,7 @@ td.center{text-align:center}
 </div>
 
 <div class="disclaimer">
-  ⚠ Sources: NOAA Storm Prediction Center (spc.noaa.gov) · NOAA NWS API (api.weather.gov) · FedEx Service Alerts (fedex.com) ·
+  🔄 Auto-updated: Apr 1, 2026  08:01 PM UTC · ⚠ Sources: NOAA Storm Prediction Center (spc.noaa.gov) · NOAA NWS API (api.weather.gov) · FedEx Service Alerts (fedex.com) ·
   Severe alerts only (HIGH + MODERATE-HIGH) · Perishable risk based on Chicago-origin transit times + interruption probability ·
   Confirm day-of status at <a href="https://www.fedex.com/en-us/service-alerts.html" target="_blank">fedex.com/service-alerts</a> ·
   Lou Malnati's Pizzeria Logistics — Chicago, IL · Data as of Mar 31, 2026
@@ -356,18 +356,10 @@ const PERI_SCORE = {CRITICAL:3, HIGH:2, MODERATE:1};
 
 // ═══ DATA ════════════════════════════════════════════════
 const STATE_DATA = [
-  {state:"Oklahoma",abbr:"OK",impact:78,level:"HIGH",weather:"Supercell Thunderstorms / Tornado Risk (5%) / Large Hail / Damaging Winds 30%",noaa:"ENHANCED",ground:"DELAYED",express:"DELAYED",start:"Wed Apr 1  12:00 PM CDT",end:"Thu Apr 2  7:00 AM CDT",pct:78,note:"OKC & Tulsa in 5% tornado contour; Lawton & Enid in 30% wind core"},
-  {state:"Kansas",abbr:"KS",impact:75,level:"HIGH",weather:"Supercell / Tornado (5%) / Damaging Winds (30%) / Large Hail",noaa:"ENHANCED",ground:"DELAYED",express:"DELAYED",start:"Wed Apr 1  12:00 PM CDT",end:"Thu Apr 2  7:00 AM CDT",pct:76,note:"Wichita & Overland Park in 5% tornado + 30% wind — highest prob Apr 1"},
-  {state:"Texas",abbr:"TX",impact:68,level:"HIGH",weather:"Damaging Winds 30% (core) / Supercell / Large Hail / Tornado Risk",noaa:"ENHANCED",ground:"DELAYED",express:"DELAYED",start:"Wed Apr 1  12:00 PM CDT",end:"Thu Apr 2  7:00 AM CDT",pct:70,note:"Wichita Falls in 30% wind core; Dallas/FW in broad 5% wind zone"},
-  {state:"Virginia",abbr:"VA",impact:55,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Damaging Winds (5%) / Heavy Rain",noaa:"SLIGHT",ground:"IMPACTED",express:"IMPACTED",start:"Wed Apr 1  2:00 PM EDT",end:"Thu Apr 2  6:00 AM EDT",pct:57,note:"Richmond & NoVA corridors; Mid-Atlantic broad 5% wind zone"},
-  {state:"Maryland",abbr:"MD",impact:54,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Damaging Winds (5%) / Heavy Rain",noaa:"SLIGHT",ground:"IMPACTED",express:"IMPACTED",start:"Wed Apr 1  2:00 PM EDT",end:"Thu Apr 2  6:00 AM EDT",pct:56,note:"Baltimore in NOAA broad 5% wind zone; BWI FedEx monitoring"},
-  {state:"Pennsylvania",abbr:"PA",impact:53,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Damaging Winds (5%) / Heavy Rain",noaa:"SLIGHT",ground:"IMPACTED",express:"IMPACTED",start:"Wed Apr 1  2:00 PM EDT",end:"Thu Apr 2  6:00 AM EDT",pct:55,note:"Philadelphia in NOAA confirmed broad 5% wind contour"},
-  {state:"Ohio",abbr:"OH",impact:52,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Damaging Winds (5%) / Heavy Rain",noaa:"SLIGHT",ground:"IMPACTED",express:"IMPACTED",start:"Wed Apr 1  2:00 PM EDT",end:"Thu Apr 2  6:00 AM EDT",pct:54,note:"Columbus in broad 5% wind zone; 1-day ground from Chicago"},
-  {state:"New Jersey",abbr:"NJ",impact:50,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Damaging Winds / Heavy Rain",noaa:"SLIGHT",ground:"IMPACTED",express:"IMPACTED",start:"Wed Apr 1  3:00 PM EDT",end:"Thu Apr 2  5:00 AM EDT",pct:52,note:"Newark FedEx hub — Mid-Atlantic zone"},
-  {state:"Delaware",abbr:"DE",impact:48,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Damaging Winds / Heavy Rain",noaa:"SLIGHT",ground:"IMPACTED",express:"IMPACTED",start:"Wed Apr 1  3:00 PM EDT",end:"Thu Apr 2  5:00 AM EDT",pct:50,note:"Wilmington corridor in Mid-Atlantic broad zone"},
-  {state:"Nebraska",abbr:"NE",impact:60,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Tornado Risk / Large Hail (Day 4 15% signal)",noaa:"SECONDARY-15",ground:"IMPACTED",express:"DELAYED",start:"Fri Apr 3  8:00 AM CDT",end:"Fri Apr 3  10:00 PM CDT",pct:62,note:"Day 4 secondary; Omaha & Lincoln I-80 corridor"},
-  {state:"Missouri",abbr:"MO",impact:58,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Tornado Risk / Large Hail (Day 4 15% signal)",noaa:"SECONDARY-15",ground:"IMPACTED",express:"DELAYED",start:"Fri Apr 3  8:00 AM CDT",end:"Fri Apr 3  10:00 PM CDT",pct:60,note:"Day 4 secondary; KCMO & STL — 1-day ground from Chicago"},
-  {state:"Iowa",abbr:"IA",impact:56,level:"MODERATE-HIGH",weather:"Severe Thunderstorms / Tornado Risk / Large Hail (Day 4 15% signal)",noaa:"SECONDARY-15",ground:"IMPACTED",express:"IMPACTED",start:"Fri Apr 3  8:00 AM CDT",end:"Fri Apr 3  10:00 PM CDT",pct:58,note:"Day 4 secondary; Des Moines & Cedar Rapids — 1-day ground from Chicago"},
+  {state:"Maryland",abbr:"MD",impact:70,level:"HIGH",weather:"Severe Thunderstorm Warning issued April 1 at 3:57PM EDT until April 1 at 4:30PM EDT by NWS Baltimore MD/Washington DC",noaa:"ACTIVE",ground:"DELAYED",express:"DELAYED",start:"Wed Apr 1  10:57 AM CDT",end:"Wed Apr 1  11:30 AM CDT",pct:70,note:"Live NOAA alert — verify at fedex.com/service-alerts"},
+  {state:"Ohio",abbr:"OH",impact:52,level:"MODERATE-HIGH",weather:"Flood Warning issued April 1 at 3:41PM EDT until April 4 at 8:00AM EDT by NWS Northern Indiana",noaa:"ACTIVE",ground:"POSS. IMPACT",express:"POSS. IMPACT",start:"Thu Apr 2  12:00 AM CDT",end:"Sat Apr 4  3:00 AM CDT",pct:52,note:"Live NOAA alert — verify at fedex.com/service-alerts"},
+  {state:"Missouri",abbr:"MO",impact:52,level:"MODERATE-HIGH",weather:"Flood Warning issued April 1 at 1:33PM CDT until April 5 at 9:29AM CDT by NWS Kansas City/Pleasant Hill MO",noaa:"ACTIVE",ground:"POSS. IMPACT",express:"POSS. IMPACT",start:"Thu Apr 2  6:55 AM CDT",end:"Sun Apr 5  4:29 AM CDT",pct:52,note:"Live NOAA alert — verify at fedex.com/service-alerts"},
+  {state:"Texas",abbr:"TX",impact:52,level:"MODERATE-HIGH",weather:"Red Flag Warning issued April 1 at 8:35AM CDT until April 1 at 10:00PM CDT by NWS Midland/Odessa TX",noaa:"ACTIVE",ground:"POSS. IMPACT",express:"POSS. IMPACT",start:"Wed Apr 1  7:00 AM CDT",end:"Wed Apr 1  5:00 PM CDT",pct:52,note:"Live NOAA alert — verify at fedex.com/service-alerts"}
 ];
 
 // ZIP: [zip,city,state,abbr,level,weather,ground,express,start,end,pct,days,note]
