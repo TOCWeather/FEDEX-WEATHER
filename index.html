@@ -155,7 +155,7 @@ td.center{text-align:center}
     </div>
   </div>
 
-  <div class="sec-hdr">7-Day Outlook — Chicago Route Impact (Confirmed NOAA Data, Apr 1, 2026  08:01 PM UTC)</div>
+  <div class="sec-hdr">7-Day Outlook — Chicago Route Impact (Confirmed NOAA Data, Apr 2, 2026  02:41 PM UTC)</div>
   <div class="sec-body">
     <table>
       <thead><tr><th>Event</th><th>NOAA Risk</th><th>Affected States</th><th>Primary Hazards</th><th>Peak Window</th><th>Express Impact</th><th>Ground Impact</th><th>Perishable Risk</th></tr></thead>
@@ -325,7 +325,7 @@ td.center{text-align:center}
 </div>
 
 <div class="disclaimer">
-  🔄 Auto-updated: Apr 1, 2026  08:01 PM UTC · ⚠ Sources: NOAA Storm Prediction Center (spc.noaa.gov) · NOAA NWS API (api.weather.gov) · FedEx Service Alerts (fedex.com) ·
+  🔄 Auto-updated: Apr 1, 2026  08:01 PM UTC · 🔄 Auto-updated: Apr 2, 2026  02:41 PM UTC · ⚠ Sources: NOAA Storm Prediction Center (spc.noaa.gov) · NOAA NWS API (api.weather.gov) · FedEx Service Alerts (fedex.com) ·
   Severe alerts only (HIGH + MODERATE-HIGH) · Perishable risk based on Chicago-origin transit times + interruption probability ·
   Confirm day-of status at <a href="https://www.fedex.com/en-us/service-alerts.html" target="_blank">fedex.com/service-alerts</a> ·
   Lou Malnati's Pizzeria Logistics — Chicago, IL · Data as of Mar 31, 2026
@@ -356,10 +356,11 @@ const PERI_SCORE = {CRITICAL:3, HIGH:2, MODERATE:1};
 
 // ═══ DATA ════════════════════════════════════════════════
 const STATE_DATA = [
-  {state:"Maryland",abbr:"MD",impact:70,level:"HIGH",weather:"Severe Thunderstorm Warning issued April 1 at 3:57PM EDT until April 1 at 4:30PM EDT by NWS Baltimore MD/Washington DC",noaa:"ACTIVE",ground:"DELAYED",express:"DELAYED",start:"Wed Apr 1  10:57 AM CDT",end:"Wed Apr 1  11:30 AM CDT",pct:70,note:"Live NOAA alert — verify at fedex.com/service-alerts"},
-  {state:"Ohio",abbr:"OH",impact:52,level:"MODERATE-HIGH",weather:"Flood Warning issued April 1 at 3:41PM EDT until April 4 at 8:00AM EDT by NWS Northern Indiana",noaa:"ACTIVE",ground:"POSS. IMPACT",express:"POSS. IMPACT",start:"Thu Apr 2  12:00 AM CDT",end:"Sat Apr 4  3:00 AM CDT",pct:52,note:"Live NOAA alert — verify at fedex.com/service-alerts"},
-  {state:"Missouri",abbr:"MO",impact:52,level:"MODERATE-HIGH",weather:"Flood Warning issued April 1 at 1:33PM CDT until April 5 at 9:29AM CDT by NWS Kansas City/Pleasant Hill MO",noaa:"ACTIVE",ground:"POSS. IMPACT",express:"POSS. IMPACT",start:"Thu Apr 2  6:55 AM CDT",end:"Sun Apr 5  4:29 AM CDT",pct:52,note:"Live NOAA alert — verify at fedex.com/service-alerts"},
-  {state:"Texas",abbr:"TX",impact:52,level:"MODERATE-HIGH",weather:"Red Flag Warning issued April 1 at 8:35AM CDT until April 1 at 10:00PM CDT by NWS Midland/Odessa TX",noaa:"ACTIVE",ground:"POSS. IMPACT",express:"POSS. IMPACT",start:"Wed Apr 1  7:00 AM CDT",end:"Wed Apr 1  5:00 PM CDT",pct:52,note:"Live NOAA alert — verify at fedex.com/service-alerts"}
+  {state:"Missouri",abbr:"MO",impact:52,level:"MODERATE-HIGH",weather:"Flood Warning issued April 2 at 9:35AM CDT until April 5 at 12:00AM CDT by NWS St Louis MO",noaa:"ACTIVE",ground:"POSS. IMPACT",express:"POSS. IMPACT",start:"Thu Apr 2  11:49 AM CDT",end:"Sat Apr 4  7:00 PM CDT",pct:52,note:"Live NOAA alert — verify at fedex.com/service-alerts"},
+  {state:"Ohio",abbr:"OH",impact:52,level:"MODERATE-HIGH",weather:"Flood Warning issued April 2 at 8:17AM EDT until April 4 at 8:00AM EDT by NWS Northern Indiana",noaa:"ACTIVE",ground:"POSS. IMPACT",express:"POSS. IMPACT",start:"Thu Apr 2  3:00 PM CDT",end:"Sat Apr 4  3:00 AM CDT",pct:52,note:"Live NOAA alert — verify at fedex.com/service-alerts"},
+  {state:"Kansas",abbr:"KS",impact:52,level:"MODERATE-HIGH",weather:"Flood Warning issued April 2 at 4:12AM CDT until April 3 at 5:06AM CDT by NWS Springfield MO",noaa:"ACTIVE",ground:"POSS. IMPACT",express:"POSS. IMPACT",start:"Thu Apr 2  12:21 AM CDT",end:"Fri Apr 3  12:06 AM CDT",pct:52,note:"Live NOAA alert — verify at fedex.com/service-alerts"},
+  {state:"Texas",abbr:"TX",impact:52,level:"MODERATE-HIGH",weather:"Red Flag Warning issued April 2 at 1:36AM CDT until April 2 at 10:00PM CDT by NWS Midland/Odessa TX",noaa:"ACTIVE",ground:"POSS. IMPACT",express:"POSS. IMPACT",start:"Thu Apr 2  8:00 AM CDT",end:"Thu Apr 2  5:00 PM CDT",pct:52,note:"Live NOAA alert — verify at fedex.com/service-alerts"},
+  {state:"Oklahoma",abbr:"OK",impact:52,level:"MODERATE-HIGH",weather:"Red Flag Warning issued April 1 at 10:30PM CDT until April 2 at 10:00PM CDT by NWS Amarillo TX",noaa:"ACTIVE",ground:"POSS. IMPACT",express:"POSS. IMPACT",start:"Thu Apr 2  8:00 AM CDT",end:"Thu Apr 2  5:00 PM CDT",pct:52,note:"Live NOAA alert — verify at fedex.com/service-alerts"}
 ];
 
 // ZIP: [zip,city,state,abbr,level,weather,ground,express,start,end,pct,days,note]
