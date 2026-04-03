@@ -6,26 +6,73 @@ Fetches live NOAA alerts and rewrites index.html with updated data.
 
 import json, re, urllib.request, urllib.error, datetime, sys, os
 
-# ── Chicago-origin transit config (static — only changes if routes change) ──
+# ── Chicago-origin transit config — all 50 states + DC ──
 TRANSIT = {
-    "OK": {"chiGround": 2, "chiExpress": 2, "periRisk": "CRITICAL"},
-    "KS": {"chiGround": 2, "chiExpress": 1, "periRisk": "CRITICAL"},
-    "TX": {"chiGround": 3, "chiExpress": 2, "periRisk": "CRITICAL"},
-    "PA": {"chiGround": 2, "chiExpress": 1, "periRisk": "HIGH"},
-    "MD": {"chiGround": 2, "chiExpress": 1, "periRisk": "HIGH"},
-    "VA": {"chiGround": 2, "chiExpress": 1, "periRisk": "HIGH"},
-    "OH": {"chiGround": 1, "chiExpress": 1, "periRisk": "HIGH"},
-    "NJ": {"chiGround": 2, "chiExpress": 1, "periRisk": "HIGH"},
-    "DE": {"chiGround": 2, "chiExpress": 1, "periRisk": "HIGH"},
-    "NE": {"chiGround": 2, "chiExpress": 1, "periRisk": "MODERATE"},
-    "MO": {"chiGround": 1, "chiExpress": 1, "periRisk": "MODERATE"},
-    "IA": {"chiGround": 1, "chiExpress": 1, "periRisk": "MODERATE"},
+    "IL":{"chiGround":1,"chiExpress":1,"periRisk":"MODERATE"},
+    "IN":{"chiGround":1,"chiExpress":1,"periRisk":"MODERATE"},
+    "WI":{"chiGround":1,"chiExpress":1,"periRisk":"MODERATE"},
+    "MI":{"chiGround":1,"chiExpress":1,"periRisk":"MODERATE"},
+    "OH":{"chiGround":1,"chiExpress":1,"periRisk":"HIGH"},
+    "MO":{"chiGround":1,"chiExpress":1,"periRisk":"MODERATE"},
+    "IA":{"chiGround":1,"chiExpress":1,"periRisk":"MODERATE"},
+    "MN":{"chiGround":2,"chiExpress":1,"periRisk":"MODERATE"},
+    "KY":{"chiGround":1,"chiExpress":1,"periRisk":"MODERATE"},
+    "KS":{"chiGround":2,"chiExpress":1,"periRisk":"CRITICAL"},
+    "NE":{"chiGround":2,"chiExpress":1,"periRisk":"MODERATE"},
+    "SD":{"chiGround":2,"chiExpress":1,"periRisk":"MODERATE"},
+    "ND":{"chiGround":2,"chiExpress":1,"periRisk":"MODERATE"},
+    "TN":{"chiGround":2,"chiExpress":1,"periRisk":"HIGH"},
+    "WV":{"chiGround":2,"chiExpress":1,"periRisk":"MODERATE"},
+    "VA":{"chiGround":2,"chiExpress":1,"periRisk":"HIGH"},
+    "PA":{"chiGround":2,"chiExpress":1,"periRisk":"HIGH"},
+    "MD":{"chiGround":2,"chiExpress":1,"periRisk":"HIGH"},
+    "DE":{"chiGround":2,"chiExpress":1,"periRisk":"HIGH"},
+    "NJ":{"chiGround":2,"chiExpress":1,"periRisk":"HIGH"},
+    "NY":{"chiGround":2,"chiExpress":1,"periRisk":"HIGH"},
+    "CT":{"chiGround":2,"chiExpress":1,"periRisk":"HIGH"},
+    "RI":{"chiGround":2,"chiExpress":1,"periRisk":"HIGH"},
+    "MA":{"chiGround":2,"chiExpress":1,"periRisk":"HIGH"},
+    "OK":{"chiGround":2,"chiExpress":2,"periRisk":"CRITICAL"},
+    "AR":{"chiGround":2,"chiExpress":1,"periRisk":"MODERATE"},
+    "MS":{"chiGround":2,"chiExpress":1,"periRisk":"MODERATE"},
+    "AL":{"chiGround":2,"chiExpress":1,"periRisk":"MODERATE"},
+    "GA":{"chiGround":2,"chiExpress":1,"periRisk":"HIGH"},
+    "SC":{"chiGround":2,"chiExpress":1,"periRisk":"HIGH"},
+    "NC":{"chiGround":2,"chiExpress":1,"periRisk":"HIGH"},
+    "DC":{"chiGround":2,"chiExpress":1,"periRisk":"HIGH"},
+    "TX":{"chiGround":3,"chiExpress":2,"periRisk":"CRITICAL"},
+    "LA":{"chiGround":2,"chiExpress":2,"periRisk":"MODERATE"},
+    "FL":{"chiGround":3,"chiExpress":2,"periRisk":"HIGH"},
+    "CO":{"chiGround":2,"chiExpress":2,"periRisk":"MODERATE"},
+    "WY":{"chiGround":2,"chiExpress":2,"periRisk":"MODERATE"},
+    "MT":{"chiGround":3,"chiExpress":2,"periRisk":"MODERATE"},
+    "ID":{"chiGround":3,"chiExpress":2,"periRisk":"MODERATE"},
+    "UT":{"chiGround":3,"chiExpress":2,"periRisk":"MODERATE"},
+    "NV":{"chiGround":3,"chiExpress":2,"periRisk":"MODERATE"},
+    "AZ":{"chiGround":3,"chiExpress":2,"periRisk":"HIGH"},
+    "NM":{"chiGround":3,"chiExpress":2,"periRisk":"MODERATE"},
+    "WA":{"chiGround":4,"chiExpress":2,"periRisk":"MODERATE"},
+    "OR":{"chiGround":4,"chiExpress":2,"periRisk":"MODERATE"},
+    "CA":{"chiGround":4,"chiExpress":2,"periRisk":"HIGH"},
+    "NH":{"chiGround":3,"chiExpress":1,"periRisk":"MODERATE"},
+    "VT":{"chiGround":3,"chiExpress":1,"periRisk":"MODERATE"},
+    "ME":{"chiGround":3,"chiExpress":2,"periRisk":"MODERATE"},
+    "AK":{"chiGround":7,"chiExpress":3,"periRisk":"MODERATE"},
+    "HI":{"chiGround":7,"chiExpress":3,"periRisk":"MODERATE"},
 }
 
 STATE_NAMES = {
-    "OK":"Oklahoma","KS":"Kansas","TX":"Texas","PA":"Pennsylvania",
-    "MD":"Maryland","VA":"Virginia","OH":"Ohio","NJ":"New Jersey",
-    "DE":"Delaware","NE":"Nebraska","MO":"Missouri","IA":"Iowa",
+    "AL":"Alabama","AK":"Alaska","AZ":"Arizona","AR":"Arkansas","CA":"California",
+    "CO":"Colorado","CT":"Connecticut","DC":"District of Columbia","DE":"Delaware",
+    "FL":"Florida","GA":"Georgia","HI":"Hawaii","ID":"Idaho","IL":"Illinois",
+    "IN":"Indiana","IA":"Iowa","KS":"Kansas","KY":"Kentucky","LA":"Louisiana",
+    "ME":"Maine","MD":"Maryland","MA":"Massachusetts","MI":"Michigan","MN":"Minnesota",
+    "MS":"Mississippi","MO":"Missouri","MT":"Montana","NE":"Nebraska","NV":"Nevada",
+    "NH":"New Hampshire","NJ":"New Jersey","NM":"New Mexico","NY":"New York",
+    "NC":"North Carolina","ND":"North Dakota","OH":"Ohio","OK":"Oklahoma","OR":"Oregon",
+    "PA":"Pennsylvania","RI":"Rhode Island","SC":"South Carolina","SD":"South Dakota",
+    "TN":"Tennessee","TX":"Texas","UT":"Utah","VT":"Vermont","VA":"Virginia",
+    "WA":"Washington","WV":"West Virginia","WI":"Wisconsin","WY":"Wyoming",
 }
 
 # Interruption probability by NWS event type and severity
@@ -193,12 +240,7 @@ def update_html(html, rows, now_utc, alert_count):
         html
     )
 
-    # Clear ZIP_DATA — always wipe stale ZIPs; they're misleading when the event has passed
-    html = re.sub(
-        r'const ZIP_DATA\s*=\s*\[[\s\S]*?\];',
-        'const ZIP_DATA = [];',
-        html
-    )
+    # ZIP_DATA stays empty — ZIP_REF is the static database; filtering happens in browser by active states
 
     # Update the last-rebuilt timestamp
     ts = now_utc.strftime("%b %-d, %Y  %I:%M %p UTC")
