@@ -193,8 +193,13 @@ def update_html(html, rows, now_utc, alert_count):
         html
     )
 
-    # Clear ZIP_DATA when we have live data (ZIPs need a future enhancement)
-    # For now keep existing ZIPs but flag them as "verify status"
+    # Clear ZIP_DATA — always wipe stale ZIPs; they're misleading when the event has passed
+    html = re.sub(
+        r'const ZIP_DATA\s*=\s*\[[\s\S]*?\];',
+        'const ZIP_DATA = [];',
+        html
+    )
+
     # Update the last-rebuilt timestamp
     ts = now_utc.strftime("%b %-d, %Y  %I:%M %p UTC")
     html = re.sub(
