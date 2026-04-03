@@ -137,9 +137,9 @@ td.center{text-align:center}
   </div>
 
   <div class="kpi-row">
-    <div class="kpi red"><div class="num" id="k-crit">3</div><div class="lbl">Critical Perishable Risk States</div></div>
-    <div class="kpi orange"><div class="num" id="k-high">9</div><div class="lbl">High Perishable Risk States</div></div>
-    <div class="kpi gold"><div class="num">12</div><div class="lbl">Total Affected States</div></div>
+    <div class="kpi red"><div class="num" id="k-crit">0</div><div class="lbl">Critical Perishable Risk States</div></div>
+    <div class="kpi orange"><div class="num" id="k-high">0</div><div class="lbl">High Perishable Risk States</div></div>
+    <div class="kpi gold"><div class="num" id="k-states">0</div><div class="lbl">Total Affected States</div></div>
     <div class="kpi"><div class="num"><span id="k-zip-count">0</span></div><div class="lbl">ZIP Codes Tracked</div></div>
     <div class="kpi orange"><div class="num" id="k-live">–</div><div class="lbl">Live NOAA Active Alerts</div></div>
   </div>
@@ -298,7 +298,7 @@ const PERI_SCORE = {CRITICAL:3, HIGH:2, MODERATE:1};
 const STATE_DATA = [];
 
 // ZIP: [zip,city,state,abbr,level,weather,ground,express,start,end,pct,days,note]
-const ZIP_REF = [["35203","Birmingham","Alabama","AL"],["35801","Huntsville","Alabama","AL"],["36101","Montgomery","Alabama","AL"],["36601","Mobile","Alabama","AL"],["99501","Anchorage","Alaska","AK"],["99701","Fairbanks","Alaska","AK"],["85001","Phoenix","Arizona","AZ"],["85003","Phoenix Downtown","Arizona","AZ"],["85251","Scottsdale","Arizona","AZ"],["85701","Tucson","Arizona","AZ"],["86001","Flagstaff","Arizona","AZ"],["72201","Little Rock","Arkansas","AR"],["72401","Jonesboro","Arkansas","AR"],["71601","Pine Bluff","Arkansas","AR"],["72901","Fort Smith","Arkansas","AR"],["90001","Los Angeles","California","CA"],["90210","Beverly Hills","California","CA"],["91101","Pasadena","California","CA"],["92101","San Diego","California","CA"],["94102","San Francisco","California","CA"],["94601","Oakland","California","CA"],["95101","San Jose","California","CA"],["95814","Sacramento","California","CA"],["93301","Bakersfield","California","CA"],["93721","Fresno","California","CA"],["80201","Denver","Colorado","CO"],["80301","Boulder","Colorado","CO"],["80901","Colorado Springs","Colorado","CO"],["81501","Grand Junction","Colorado","CO"],["80521","Fort Collins","Colorado","CO"],["06101","Hartford","Connecticut","CT"],["06510","New Haven","Connecticut","CT"],["06801","Danbury","Connecticut","CT"],["06901","Stamford","Connecticut","CT"],["19801","Wilmington","Delaware","DE"],["19901","Dover","Delaware","DE"],["19971","Rehoboth Beach","Delaware","DE"],["20001","Washington","District of Columbia","DC"],["20002","Washington NE","District of Columbia","DC"],["32099","Jacksonville","Florida","FL"],["32301","Tallahassee","Florida","FL"],["32801","Orlando","Florida","FL"],["33101","Miami","Florida","FL"],["33601","Tampa","Florida","FL"],["33901","Fort Myers","Florida","FL"],["34201","Bradenton","Florida","FL"],["32501","Pensacola","Florida","FL"],["30301","Atlanta","Georgia","GA"],["30303","Atlanta Downtown","Georgia","GA"],["31401","Savannah","Georgia","GA"],["31901","Columbus","Georgia","GA"],["30901","Augusta","Georgia","GA"],["31201","Macon","Georgia","GA"],["96801","Honolulu","Hawaii","HI"],["96720","Hilo","Hawaii","HI"],["83701","Boise","Idaho","ID"],["83401","Idaho Falls","Idaho","ID"],["83201","Pocatello","Idaho","ID"],["60601","Chicago Loop","Illinois","IL"],["60616","Chicago South","Illinois","IL"],["60707","Chicago West","Illinois","IL"],["62701","Springfield","Illinois","IL"],["61602","Peoria","Illinois","IL"],["62221","Belleville","Illinois","IL"],["46201","Indianapolis","Indiana","IN"],["46601","South Bend","Indiana","IN"],["47901","Lafayette","Indiana","IN"],["47708","Evansville","Indiana","IN"],["46801","Fort Wayne","Indiana","IN"],["50301","Des Moines","Iowa","IA"],["52401","Cedar Rapids","Iowa","IA"],["52801","Davenport","Iowa","IA"],["51101","Sioux City","Iowa","IA"],["66101","Kansas City KS","Kansas","KS"],["66202","Overland Park","Kansas","KS"],["67201","Wichita","Kansas","KS"],["66502","Manhattan","Kansas","KS"],["67401","Salina","Kansas","KS"],["66801","Emporia","Kansas","KS"],["40201","Louisville","Kentucky","KY"],["40501","Lexington","Kentucky","KY"],["41011","Covington","Kentucky","KY"],["42001","Paducah","Kentucky","KY"],["70112","New Orleans","Louisiana","LA"],["70801","Baton Rouge","Louisiana","LA"],["71101","Shreveport","Louisiana","LA"],["70501","Lafayette","Louisiana","LA"],["04101","Portland","Maine","ME"],["04401","Bangor","Maine","ME"],["21201","Baltimore","Maryland","MD"],["20601","Waldorf","Maryland","MD"],["21401","Annapolis","Maryland","MD"],["20878","Gaithersburg","Maryland","MD"],["02101","Boston","Massachusetts","MA"],["02101","Boston Downtown","Massachusetts","MA"],["01101","Springfield","Massachusetts","MA"],["01801","Woburn","Massachusetts","MA"],["02540","Falmouth","Massachusetts","MA"],["48201","Detroit","Michigan","MI"],["48901","Lansing","Michigan","MI"],["49501","Grand Rapids","Michigan","MI"],["48601","Saginaw","Michigan","MI"],["49801","Iron Mountain","Michigan","MI"],["55401","Minneapolis","Minnesota","MN"],["55101","Saint Paul","Minnesota","MN"],["55801","Duluth","Minnesota","MN"],["56301","St Cloud","Minnesota","MN"],["39201","Jackson","Mississippi","MS"],["39501","Gulfport","Mississippi","MS"],["38601","Corinth","Mississippi","MS"],["39401","Hattiesburg","Mississippi","MS"],["63101","St Louis","Missouri","MO"],["64108","Kansas City MO","Missouri","MO"],["65101","Jefferson City","Missouri","MO"],["65801","Springfield MO","Missouri","MO"],["63301","St Charles","Missouri","MO"],["59601","Helena","Montana","MT"],["59101","Billings","Montana","MT"],["59801","Missoula","Montana","MT"],["59401","Great Falls","Montana","MT"],["68101","Omaha","Nebraska","NE"],["68501","Lincoln","Nebraska","NE"],["69101","North Platte","Nebraska","NE"],["68601","Columbus","Nebraska","NE"],["89101","Las Vegas","Nevada","NV"],["89501","Reno","Nevada","NV"],["89701","Carson City","Nevada","NV"],["03101","Manchester","New Hampshire","NH"],["03301","Concord","New Hampshire","NH"],["03801","Portsmouth","New Hampshire","NH"],["07101","Newark","New Jersey","NJ"],["08101","Camden","New Jersey","NJ"],["07601","Hackensack","New Jersey","NJ"],["08901","New Brunswick","New Jersey","NJ"],["07302","Jersey City","New Jersey","NJ"],["87101","Albuquerque","New Mexico","NM"],["87501","Santa Fe","New Mexico","NM"],["88001","Las Cruces","New Mexico","NM"],["10001","New York City","New York","NY"],["10451","Bronx","New York","NY"],["11201","Brooklyn","New York","NY"],["14201","Buffalo","New York","NY"],["12201","Albany","New York","NY"],["13201","Syracuse","New York","NY"],["14601","Rochester","New York","NY"],["27601","Raleigh","North Carolina","NC"],["28201","Charlotte","North Carolina","NC"],["27401","Greensboro","North Carolina","NC"],["28301","Fayetteville","North Carolina","NC"],["28801","Asheville","North Carolina","NC"],["58101","Fargo","North Dakota","ND"],["58501","Bismarck","North Dakota","ND"],["58201","Grand Forks","North Dakota","ND"],["44101","Cleveland","Ohio","OH"],["43201","Columbus","Ohio","OH"],["45201","Cincinnati","Ohio","OH"],["44501","Youngstown","Ohio","OH"],["43601","Toledo","Ohio","OH"],["45401","Dayton","Ohio","OH"],["73101","Oklahoma City","Oklahoma","OK"],["74101","Tulsa","Oklahoma","OK"],["73501","Lawton","Oklahoma","OK"],["73701","Enid","Oklahoma","OK"],["74701","Durant","Oklahoma","OK"],["97201","Portland","Oregon","OR"],["97401","Eugene","Oregon","OR"],["97301","Salem","Oregon","OR"],["97701","Bend","Oregon","OR"],["19101","Philadelphia","Pennsylvania","PA"],["15201","Pittsburgh","Pennsylvania","PA"],["17101","Harrisburg","Pennsylvania","PA"],["18501","Scranton","Pennsylvania","PA"],["16501","Erie","Pennsylvania","PA"],["02901","Providence","Rhode Island","RI"],["02840","Newport","Rhode Island","RI"],["29201","Columbia","South Carolina","SC"],["29401","Charleston","South Carolina","SC"],["29601","Greenville","South Carolina","SC"],["29501","Florence","South Carolina","SC"],["57101","Sioux Falls","South Dakota","SD"],["57501","Pierre","South Dakota","SD"],["57701","Rapid City","South Dakota","SD"],["37201","Nashville","Tennessee","TN"],["38101","Memphis","Tennessee","TN"],["37901","Knoxville","Tennessee","TN"],["37401","Chattanooga","Tennessee","TN"],["75201","Dallas","Texas","TX"],["77001","Houston","Texas","TX"],["78201","San Antonio","Texas","TX"],["73301","Austin","Texas","TX"],["79901","El Paso","Texas","TX"],["76101","Fort Worth","Texas","TX"],["79401","Lubbock","Texas","TX"],["76501","Temple","Texas","TX"],["84101","Salt Lake City","Utah","UT"],["84601","Provo","Utah","UT"],["84401","Ogden","Utah","UT"],["84701","Cedar City","Utah","UT"],["05601","Montpelier","Vermont","VT"],["05401","Burlington","Vermont","VT"],["23219","Richmond","Virginia","VA"],["22314","Alexandria","Virginia","VA"],["23501","Norfolk","Virginia","VA"],["24011","Roanoke","Virginia","VA"],["22901","Charlottesville","Virginia","VA"],["98101","Seattle","Washington","WA"],["99201","Spokane","Washington","WA"],["98402","Tacoma","Washington","WA"],["98801","Wenatchee","Washington","WA"],["98501","Olympia","Washington","WA"],["25301","Charleston","West Virginia","WV"],["26101","Parkersburg","West Virginia","WV"],["26301","Clarksburg","West Virginia","WV"],["53201","Milwaukee","Wisconsin","WI"],["53701","Madison","Wisconsin","WI"],["54901","Oshkosh","Wisconsin","WI"],["54601","La Crosse","Wisconsin","WI"],["54301","Green Bay","Wisconsin","WI"],["82001","Cheyenne","Wyoming","WY"],["82601","Casper","Wyoming","WY"],["82701","Newcastle","Wyoming","WY"]];
+let ZIP_REF = [];  // loaded from zips.json
 const ZIP_DATA = [];
 
 // ═══ HELPERS ════════════════════════════════════════════
@@ -628,6 +628,8 @@ function loadAll(){
   const high=STATE_DATA.filter(s=>(TRANSIT[s.abbr]||{}).periRisk==='HIGH').length;
   document.getElementById('k-crit').textContent=crit;
   document.getElementById('k-high').textContent=high;
+  const ks=document.getElementById('k-states');
+  if(ks) ks.textContent=STATE_DATA.length;
   const activeZips=ZIP_REF.filter(r=>new Set(STATE_DATA.map(s=>s.abbr)).has(r[3])).length;
   const kz=document.getElementById('k-zip-count');
   if(kz) kz.textContent=activeZips;
@@ -648,7 +650,22 @@ function loadAll(){
   renderChart();
   loadLiveAlerts();
 }
-loadAll();
+// ═══ STARTUP — load zips.json then init ══════════════════
+async function init(){
+  try{
+    const r = await fetch('zips.json');
+    if(r.ok){
+      ZIP_REF = await r.json();
+      console.log('zips.json loaded: ' + ZIP_REF.length + ' ZIPs');
+    } else {
+      console.warn('zips.json not found (' + r.status + ') — ZIP tab will be limited until first GitHub Actions run');
+    }
+  }catch(e){
+    console.warn('Could not load zips.json:', e.message);
+  }
+  loadAll();
+}
+init();
 </script>
 </body>
 </html>

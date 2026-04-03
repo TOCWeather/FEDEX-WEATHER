@@ -276,6 +276,39 @@ def update_html(html, rows, now_utc, alert_count):
     return html
 
 
+
+def generate_zips_json(base_dir):
+    """Download full US ZIP database and save as zips.json next to index.html."""
+    csv_url = "https://raw.githubusercontent.com/scpike/us-state-county-zip/master/geo-data.csv"
+    print("  Fetching US ZIP database...")
+    req = urllib.request.Request(csv_url, headers={"User-Agent": "LouMalnatis-FedExAlert/2.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            csv_text = r.read().decode("utf-8")
+    except Exception as e:
+        print(f"  ZIP database fetch failed: {e} — skipping zips.json update", file=sys.stderr)
+        return
+
+    seen = set()
+    zips = []
+    for line in csv_text.split("\n")[1:]:  # skip header
+        parts = line.split(",")
+        if len(parts) < 6:
+            continue
+        zipcode = parts[3].strip().zfill(5)
+        city    = parts[5].strip()
+        state   = parts[1].strip()
+        abbr    = parts[2].strip()
+        if not zipcode or not abbr or zipcode in seen:
+            continue
+        seen.add(zipcode)
+        zips.append([zipcode, city, state, abbr])
+
+    out_path = os.path.join(base_dir, "zips.json")
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(zips, f, separators=(",", ":"))
+    print(f"  zips.json saved — {len(zips)} ZIP codes")
+
 def main():
     print("Fetching NOAA alerts...")
     alerts = fetch_noaa_alerts()
@@ -285,7 +318,8 @@ def main():
     rows, now_utc = build_state_data(alerts)
     print(f"  {len(rows)} Chicago-route states affected: {[r['abbr'] for r in rows]}")
 
-    html_path = os.path.join(os.path.dirname(__file__), "index.html")
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    html_path = os.path.join(base_dir, "index.html")
     with open(html_path, "r", encoding="utf-8") as f:
         html = f.read()
 
@@ -295,6 +329,9 @@ def main():
         f.write(html)
 
     print(f"  index.html updated — {len(rows)} states, rebuilt at {now_utc.strftime('%Y-%m-%d %H:%M UTC')}")
+
+    # Regenerate full US ZIP database
+    generate_zips_json(base_dir)
 
 
 if __name__ == "__main__":
