@@ -346,7 +346,7 @@ function renderZipTable(data){
   filteredZips=data;
   document.getElementById('zip-count').textContent=`Showing ${data.length} of ${ZIP_DATA.length} ZIPs`;
   const tb=document.getElementById('zip-tbody');
-  if(!ZIP_DATA.length){tb.innerHTML='<tr><td colspan="14" style="padding:20px;text-align:center;color:#107C41;font-weight:bold;">✅ No active severe weather alerts affecting Chicago-origin routes. ZIP data clears automatically when alerts expire.</td></tr>';return;}
+  if(!STATE_DATA.length){tb.innerHTML='<tr><td colspan="14" style="padding:20px;text-align:center;color:#107C41;font-weight:bold;">✅ No active severe weather alerts affecting Chicago-origin routes. ZIP data clears automatically when alerts expire.</td></tr>';return;}
   if(!data.length){tb.innerHTML='<tr><td colspan="14" class="nodata">No ZIPs match filters.</td></tr>';return;}
   tb.innerHTML=data.map((r,i)=>{
     const pr=periFromRow(r);
