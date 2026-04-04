@@ -77,29 +77,22 @@ STATE_NAMES = {
 
 # Interruption probability by NWS event type and severity
 EVENT_IMPACT = {
-    # Tornado-related
     "Tornado Warning":        ("HIGH", 82, "DELAYED", "DELAYED"),
     "Tornado Watch":          ("HIGH", 72, "DELAYED", "DELAYED"),
-    # Severe thunderstorm
     "Severe Thunderstorm Warning": ("HIGH", 70, "DELAYED", "DELAYED"),
     "Severe Thunderstorm Watch":   ("MODERATE-HIGH", 58, "POSS. IMPACT", "POSS. IMPACT"),
-    # Winter
     "Blizzard Warning":       ("HIGH", 80, "DELAYED", "DELAYED"),
     "Winter Storm Warning":   ("HIGH", 74, "DELAYED", "DELAYED"),
     "Winter Storm Watch":     ("MODERATE-HIGH", 60, "POSS. IMPACT", "POSS. IMPACT"),
     "Ice Storm Warning":      ("HIGH", 78, "DELAYED", "DELAYED"),
     "Winter Weather Advisory":("MODERATE-HIGH", 50, "POSS. IMPACT", "POSS. IMPACT"),
-    # Wind
     "High Wind Warning":      ("HIGH", 70, "DELAYED", "DELAYED"),
     "High Wind Watch":        ("MODERATE-HIGH", 55, "POSS. IMPACT", "POSS. IMPACT"),
     "Wind Advisory":          ("MODERATE-HIGH", 48, "POSS. IMPACT", "POSS. IMPACT"),
-    # Flood
     "Flash Flood Warning":    ("MODERATE-HIGH", 60, "POSS. IMPACT", "POSS. IMPACT"),
     "Flood Warning":          ("MODERATE-HIGH", 52, "POSS. IMPACT", "POSS. IMPACT"),
-    # Hurricane/tropical
     "Hurricane Warning":      ("HIGH", 82, "DELAYED", "DELAYED"),
     "Tropical Storm Warning": ("HIGH", 72, "DELAYED", "DELAYED"),
-    # Extreme heat/cold
     "Excessive Heat Warning": ("MODERATE-HIGH", 48, "POSS. IMPACT", "POSS. IMPACT"),
     "Extreme Cold Warning":   ("HIGH", 68, "DELAYED", "DELAYED"),
 }
@@ -129,14 +122,10 @@ def states_from_alert(feat):
     """Extract state abbreviations affected by an alert feature."""
     props = feat.get("properties", {})
     states = set()
-    # areaDesc contains human-readable zones like "Central Oklahoma"
-    area = props.get("areaDesc", "")
-    # geocode SAME/UGC codes contain state prefix
     geocode = props.get("geocode", {})
     for code in geocode.get("SAME", []) + geocode.get("UGC", []):
         if len(code) >= 2:
             states.add(code[:2])
-    # Also scan affectedZones URIs: .../zones/forecast/OKZ001
     for zone_url in props.get("affectedZones", []):
         m = re.search(r'/([A-Z]{2})[CZ]\d{3}$', zone_url)
         if m:
@@ -147,7 +136,7 @@ def states_from_alert(feat):
 def build_state_data(alerts_geojson):
     """Map live NOAA alerts to Chicago-route states, returning state rows."""
     now_utc = datetime.datetime.utcnow()
-    affected = {}  # abbr → best (level, pct, ground, express, event, onset, ends)
+    affected = {}
 
     if alerts_geojson:
         for feat in alerts_geojson.get("features", []):
@@ -158,7 +147,6 @@ def build_state_data(alerts_geojson):
             onset = props.get("onset", "")
             ends  = props.get("ends", props.get("expires", ""))
 
-            # Determine impact level
             if event in EVENT_IMPACT:
                 level, pct, ground, express = EVENT_IMPACT[event]
             elif severity == "Extreme":
@@ -166,7 +154,6 @@ def build_state_data(alerts_geojson):
             else:
                 level, pct, ground, express = DEFAULT_MODHI
 
-            # Only keep HIGH + MODERATE-HIGH
             if level not in ("HIGH", "MODERATE-HIGH"):
                 continue
 
@@ -174,7 +161,6 @@ def build_state_data(alerts_geojson):
             for abbr in alert_states:
                 if abbr not in TRANSIT:
                     continue
-                # Keep highest-impact alert per state
                 existing = affected.get(abbr)
                 if existing is None or pct > existing["pct"]:
                     affected[abbr] = {
@@ -190,17 +176,14 @@ def build_state_data(alerts_geojson):
                         "noaa": "ACTIVE",
                     }
 
-    # Build sorted state rows (HIGH first, then MODERATE-HIGH, by pct desc)
     rows = sorted(affected.values(), key=lambda x: (-{"HIGH":1,"MODERATE-HIGH":0}.get(x["level"],0), -x["pct"]))
 
-    # Format dates for display
     for r in rows:
         for key in ("onset", "ends"):
             raw = r[key]
             if raw:
                 try:
                     dt = datetime.datetime.fromisoformat(raw.replace("Z", "+00:00"))
-                    # Convert to CDT (UTC-5) or EDT (UTC-4) — approximate
                     offset = datetime.timedelta(hours=-5)
                     dt_local = dt + offset
                     r[key + "_fmt"] = dt_local.strftime("%a %b %-d  %-I:%M %p CDT")
@@ -231,8 +214,7 @@ def fmt_js_state_data(rows):
 
 
 def update_html(html, rows, now_utc, alert_count):
-    """Patch the STATE_DATA and ZIP_DATA arrays and update timestamps in the HTML."""
-    # Replace STATE_DATA
+    """Patch the STATE_DATA array and update timestamps in the HTML."""
     state_js = fmt_js_state_data(rows)
     html = re.sub(
         r'const STATE_DATA\s*=\s*\[[\s\S]*?\];',
@@ -240,41 +222,29 @@ def update_html(html, rows, now_utc, alert_count):
         html
     )
 
-    # ZIP_DATA stays empty — ZIP_REF is the static database; filtering happens in browser by active states
-
-    # Update the last-rebuilt timestamp
     ts = now_utc.strftime("%b %-d, %Y  %I:%M %p UTC")
     html = re.sub(
         r'(7-Day Outlook — Chicago Route Impact \(Confirmed NOAA Data,\s*)[^)]+\)',
         rf'\g<1>{ts})',
         html
     )
-    html = re.sub(
-        r'(Mar 31 2026)',
-        ts,
-        html
-    )
 
-    # Update KPI counts
     high_count = sum(1 for r in rows if r["level"] == "HIGH")
     modhi_count = sum(1 for r in rows if r["level"] == "MODERATE-HIGH")
     state_count = len(rows)
 
-    # Patch KPI values in the JS
     html = re.sub(r"(id='kpi-high'[^>]*>)[^<]*", rf"\g<1>{high_count}", html)
     html = re.sub(r"(id='kpi-modhi'[^>]*>)[^<]*", rf"\g<1>{modhi_count}", html)
     html = re.sub(r"(id='kpi-states'[^>]*>)[^<]*", rf"\g<1>{state_count}", html)
 
-    # Add a "Last auto-updated" note to the footer
     html = re.sub(
         r'(⚠ Sources:)',
-        f'🔄 Auto-updated: {ts} · \g<1>',
+        f'U0001f504 Auto-updated: {ts} · \g<1>',
         html,
         count=1
     )
 
     return html
-
 
 
 def generate_zips_json(base_dir):
@@ -291,7 +261,7 @@ def generate_zips_json(base_dir):
 
     seen = set()
     zips = []
-    for line in csv_text.split("\n")[1:]:  # skip header
+    for line in csv_text.split("\n")[1:]:
         parts = line.split(",")
         if len(parts) < 6:
             continue
@@ -308,6 +278,7 @@ def generate_zips_json(base_dir):
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(zips, f, separators=(",", ":"))
     print(f"  zips.json saved — {len(zips)} ZIP codes")
+
 
 def main():
     print("Fetching NOAA alerts...")
@@ -330,7 +301,6 @@ def main():
 
     print(f"  index.html updated — {len(rows)} states, rebuilt at {now_utc.strftime('%Y-%m-%d %H:%M UTC')}")
 
-    # Regenerate full US ZIP database
     generate_zips_json(base_dir)
 
 
