@@ -140,7 +140,7 @@ td.center{text-align:center}
     <div class="kpi red"><div class="num" id="k-crit">0</div><div class="lbl">Critical Perishable Risk States</div></div>
     <div class="kpi orange"><div class="num" id="k-high">0</div><div class="lbl">High Perishable Risk States</div></div>
     <div class="kpi gold"><div class="num" id="k-states">0</div><div class="lbl">Total Affected States</div></div>
-    <div class="kpi"><div class="num"><span id="k-zip-count">0</span></div><div class="lbl">ZIP Codes Tracked</div></div>
+    <div class="kpi"><div class="num"><span id="k-zip-count">0</span></div><div class="lbl">ZIP Codes Affected</div></div>
     <div class="kpi orange"><div class="num" id="k-live">–</div><div class="lbl">Live NOAA Active Alerts</div></div>
   </div>
 
@@ -407,6 +407,9 @@ function filterZips(){
         sd.note||''
       ];
     });
+  // Update dashboard ZIP Codes Affected count
+  const kz = document.getElementById('k-zip-count');
+  if(kz) kz.textContent = data.length;
 
   if(sl) data=data.filter(r=>r[0].includes(sl)||r[1].toLowerCase().includes(sl)||r[2].toLowerCase().includes(sl)||r[3].toLowerCase().includes(sl));
   if(stateF) data=data.filter(r=>r[2]===stateF);
@@ -650,9 +653,7 @@ function loadAll(){
   document.getElementById('k-high').textContent=high;
   const ks=document.getElementById('k-states');
   if(ks) ks.textContent=STATE_DATA.length;
-  const activeZips=ZIP_REF.filter(r=>new Set(STATE_DATA.map(s=>s.abbr)).has(r[3])).length;
-  const kz=document.getElementById('k-zip-count');
-  if(kz) kz.textContent=activeZips;
+  // k-zip-count is updated dynamically by filterZips()
   // Populate state dropdown dynamically from STATE_DATA
   const sel=document.getElementById('zip-state');
   if(sel){
