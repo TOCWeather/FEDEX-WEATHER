@@ -138,36 +138,39 @@ FIPS_TO_ABBR = {
 }
 
 def states_from_alert(feat):
-    """Extract state abbreviations and county codes from an alert feature.
-    Returns (states: set, counties: dict[abbr -> set of 3-digit county codes]).
-    County extraction uses both /zones/county/ URLs and SAME geocodes so that
-    fire-weather zone alerts (GAZ###) are handled correctly."""
+    """Extract state abbreviations and county names from an alert feature.
+    Returns (states: set, counties: dict[abbr -> set of county names]).
+    States come from UGC/SAME geocodes; county names come from areaDesc,
+    which matches the county names stored in zips.json."""
     props = feat.get("properties", {})
     states = set()
-    counties = {}  # abbr -> set of 3-digit county FIPS codes
     geocode = props.get("geocode", {})
     # UGC codes: "GAZ132" -> state abbr "GA" (first 2 chars)
     for code in geocode.get("UGC", []):
         if len(code) >= 2:
             states.add(code[:2])
-    # SAME codes: "013069" = 0 + state-FIPS "13" (GA) + county "069"
+    # SAME codes: 0 + state-FIPS "13" (GA) -> state abbr via FIPS_TO_ABBR
     for code in geocode.get("SAME", []):
         if len(code) == 6:
             abbr = FIPS_TO_ABBR.get(code[1:3])
             if abbr:
                 states.add(abbr)
-                counties.setdefault(abbr, set()).add(code[3:])
-    # County zone URLs: /zones/county/INC097 -> IN, 097
+    # Zone URLs: add state from county or fire/forecast zone codes
     for zone_url in props.get("affectedZones", []):
         m = re.search(r'/([A-Z]{2})C(\d{3})$', zone_url)
         if m:
-            abbr, county = m.group(1), m.group(2)
-            states.add(abbr)
-            counties.setdefault(abbr, set()).add(county)
+            states.add(m.group(1))
         else:
             m2 = re.search(r'/([A-Z]{2})[A-Z]\d{3}$', zone_url)
             if m2:
                 states.add(m2.group(1))
+    # County names from areaDesc (e.g. "Coffee; Jeff Davis; Bacon; Appling")
+    # These match county names in zips.json index 4 — no FIPS lookup needed
+    area_desc = props.get("areaDesc", "")
+    county_names = {c.strip() for c in area_desc.split(";") if c.strip()}
+    # Associate all county names with every identified state.
+    # filterZips also checks state abbr so cross-state collisions are impossible.
+    counties = {abbr: county_names.copy() for abbr in states} if county_names else {}
     return states, counties
 
 def build_state_data(alerts_geojson):
