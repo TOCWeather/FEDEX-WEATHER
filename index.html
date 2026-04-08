@@ -376,7 +376,7 @@ function filterZips(){
     return;
   }
 
-  // Build county map: {state_abbr: Set of 3-digit county FIPS} from STATE_DATA
+  // Build county map: {state_abbr: Set of county names} from STATE_DATA
   const countyMap = {};
   STATE_DATA.forEach(s => {
     if(s.counties && s.counties.length) countyMap[s.abbr] = new Set(s.counties);
