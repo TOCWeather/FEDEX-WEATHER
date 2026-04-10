@@ -228,6 +228,10 @@ td.center{text-align:center}
         <option value="HIGH">High</option>
         <option value="MODERATE">Moderate</option>
       </select>
+      <label>Hazard:</label>
+      <select id="zip-hazard" onchange="filterZips()">
+        <option value="">All Hazards</option>
+      </select>
       <span id="zip-count" style="font-size:0.73rem;color:#666"></span>
     </div>
     <div class="tbl-wrap">
@@ -359,7 +363,7 @@ function eDays(r){return (TRANSIT[r[3]]||{}).chiExpress||'—';}
 
 function renderZipTable(data){
   filteredZips=data;
-  document.getElementById('zip-count').textContent=`Showing ${data.length} of ${ZIP_DATA.length} ZIPs`;
+  document.getElementById('zip-count').textContent=`Showing ${data.length} of ${window._totalZipCount||data.length} ZIPs`;
   const tb=document.getElementById('zip-tbody');
   if(!STATE_DATA.length){tb.innerHTML='<tr><td colspan="14" style="padding:20px;text-align:center;color:#107C41;font-weight:bold;">✅ No active severe weather alerts affecting Chicago-origin routes. ZIP data clears automatically when alerts expire.</td></tr>';return;}
   if(!data.length){tb.innerHTML='<tr><td colspan="14" class="nodata">No ZIPs match filters.</td></tr>';return;}
@@ -388,6 +392,7 @@ function filterZips(){
   const stateF=(document.getElementById('zip-state')||{}).value||'';
   const svcF=(document.getElementById('zip-svc')||{}).value||'';
   const periF=(document.getElementById('zip-peri')||{}).value||'';
+const hazardF=(document.getElementById('zip-hazard')||{}).value||'';
   const sl=search.toLowerCase();
 
   if(!activeAbbrs.size){
@@ -413,13 +418,13 @@ function filterZips(){
     });
   // Update dashboard ZIP Codes Affected count
   const kz = document.getElementById('k-zip-count');
-  if(kz) kz.textContent = data.length;
+  if(kz) kz.textContent = data.length;window._totalZipCount=data.length;const _hsel=document.getElementById('zip-hazard');if(_hsel){const _hcur=_hsel.value;const _htypes=[...new Set(data.map(r=>(r[5].split(' issued')[0]||r[5]).trim()))].filter(Boolean).sort();while(_hsel.options.length>1)_hsel.remove(1);_htypes.forEach(function(h){var o=document.createElement('option');o.value=h;o.text=h;_hsel.add(o);});if(_hcur)_hsel.value=_hcur;}
 
   if(sl) data=data.filter(r=>r[0].includes(sl)||r[1].toLowerCase().includes(sl)||r[2].toLowerCase().includes(sl)||r[3].toLowerCase().includes(sl));
   if(stateF) data=data.filter(r=>r[2]===stateF);
   if(svcF==='express') data=data.filter(r=>r[7]!=='NORMAL'&&r[7]!=='');
   if(svcF==='ground')  data=data.filter(r=>r[6]!=='NORMAL'&&r[6]!=='');
-  if(periF){const p=periF.toUpperCase();data=data.filter(r=>(TRANSIT[r[3]]||{}).periRisk===p);}
+  if(periF){const p=periF.toUpperCase();data=data.filter(r=>(TRANSIT[r[3]]||{}).periRisk===p);}if(hazardF){data=data.filter(r=>r[5].indexOf(hazardF)>=0);}
   data=sortZipData(data);
   renderZipTable(data);
 }
