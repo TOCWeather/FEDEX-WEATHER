@@ -364,7 +364,7 @@ function showTab(t){
 let zipSort={col:'pct',dir:-1}, filteredZips=[];
 const COL={zip:0,city:1,state:2,abbr:3,level:4,ground:6,express:7,start:8,end:9,pct:10,days:11};
 
-function periFromRow(r){return periOfAbbr(r[3]);}
+function periFromRow(r){const lv=(r[4]||'').toUpperCase();if(lv==='EXTREME')return 'CRITICAL';if(lv==='HIGH')return 'HIGH';if(lv==='MODERATE-HIGH')return 'MODERATE';if(lv==='LOW')return 'LOW';return periOfAbbr(r[3]);}
 function gDays(r){return (TRANSIT[r[3]]||{}).chiGround||'—';}
 function eDays(r){return (TRANSIT[r[3]]||{}).chiExpress||'—';}
 
@@ -411,7 +411,7 @@ const hazardF=(document.getElementById('zip-hazard')||{}).value||'';
   let data = ZIP_REF
     .filter(r => activeAbbrs.has(r[3]))
     .map(r => {
-      const sd = STATE_DATA.find(s=>s.abbr===r[3])||{};
+      const _sds=STATE_DATA.filter(s=>s.abbr===r[3]);const sd=_sds.length?_sds.reduce((a,b)=>(b.pct||0)>(a.pct||0)?b:a):{};
       // Expand to full row format: [zip,city,state,abbr,level,weather,ground,express,start,end,pct,days,note]
       return [r[0],r[1],r[2],r[3],
         sd.level||'MODERATE-HIGH',
@@ -431,7 +431,7 @@ const hazardF=(document.getElementById('zip-hazard')||{}).value||'';
   if(stateF) data=data.filter(r=>r[2]===stateF);
   if(svcF==='express') data=data.filter(r=>r[7]!=='NORMAL'&&r[7]!=='');
   if(svcF==='ground')  data=data.filter(r=>r[6]!=='NORMAL'&&r[6]!=='');
-  if(periF){const p=periF.toUpperCase();data=data.filter(r=>(TRANSIT[r[3]]||{}).periRisk===p);}if(hazardF){data=data.filter(r=>r[5].indexOf(hazardF)>=0);}
+  if(periF){const p=periF.toUpperCase();data=data.filter(r=>periFromRow(r)===p);}if(hazardF){data=data.filter(r=>r[5].indexOf(hazardF)>=0);}
   data=sortZipData(data);
   renderZipTable(data);
 }
