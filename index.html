@@ -172,16 +172,28 @@ td.center{text-align:center}
     </div>
   </div>
 
-  <div class="sec-hdr" id="outlook-hdr">7-Day Outlook — Chicago Route Impact</div>
-  <div class="sec-body">
-    <table>
-      <thead><tr><th>Event</th><th>NOAA Risk</th><th>Affected States</th><th>Primary Hazards</th><th>Peak Window</th><th>Express Impact</th><th>Ground Impact</th><th>Perishable Risk</th></tr></thead>
-      <tbody id="outlook-tbody">
-        <tr><td colspan="8" style="padding:20px;text-align:center;color:#888">Loading…</td></tr>
-      </tbody>
-    </table>
+  <div class="sec-hdr" id="spc-hdr">SPC Severe Weather Outlook</div>
+  <div class="sec-body" id="spc-wrap">
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;padding:10px 0">
+      <div>
+        <div style="font-size:0.72rem;font-weight:700;color:#555;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em">Day 1 Outlook</div>
+        <a href="https://www.spc.noaa.gov/products/outlook/" target="_blank" rel="noopener">
+          <img src="https://www.spc.noaa.gov/products/outlook/day1otlk.gif" alt="SPC Day 1 Outlook" style="max-width:380px;width:100%;border:1px solid #ddd;border-radius:4px" onerror="this.parentElement.innerHTML='<div style=color:#888;font-size:0.8rem;padding:8px>SPC image unavailable — <a href=https://www.spc.noaa.gov/products/outlook/ target=_blank>view at spc.noaa.gov</a></div>'">
+        </a>
+      </div>
+      <div>
+        <div style="font-size:0.72rem;font-weight:700;color:#555;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em">Day 2 Outlook</div>
+        <a href="https://www.spc.noaa.gov/products/outlook/" target="_blank" rel="noopener">
+          <img src="https://www.spc.noaa.gov/products/outlook/day2otlk.gif" alt="SPC Day 2 Outlook" style="max-width:380px;width:100%;border:1px solid #ddd;border-radius:4px" onerror="this.parentElement.innerHTML='<div style=color:#888;font-size:0.8rem;padding:8px>SPC image unavailable — <a href=https://www.spc.noaa.gov/products/outlook/ target=_blank>view at spc.noaa.gov</a></div>'">
+        </a>
+      </div>
+      <div style="flex:1;min-width:220px">
+        <div style="font-size:0.72rem;font-weight:700;color:#555;margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em">States With Active Severe Alerts</div>
+        <div id="spc-states-list" style="font-size:0.82rem;color:#888">Loading…</div>
+        <div style="margin-top:14px;font-size:0.7rem;color:#aaa">Source: NOAA live alerts · Excludes Red Flag &amp; routine advisories</div>
+      </div>
+    </div>
   </div>
-
   <div class="sec-hdr">Live NOAA Active Alerts <span style="font-weight:400;font-size:0.7rem;opacity:.75">(api.weather.gov — refreshed on load)</span></div>
   <div class="sec-body" id="live-alerts-wrap">
     <div class="loading"><div class="spinner"></div>Fetching live NOAA data…</div>
@@ -278,7 +290,7 @@ td.center{text-align:center}
 
 <!-- MAP -->
 <div class="pane" id="pane-map">
-  <div class="sec-hdr">US Impact Map — Chicago-Origin Perishable Routes · 7-Day Outlook</div>
+  <div class="sec-hdr">US Impact Map — Chicago-Origin Perishable Routes </div>
   <div class="state-grid" id="map-grid"></div>
   <div style="background:#fff;padding:8px 16px;border-top:1px solid #eee;font-size:0.72rem;color:#555;border-radius:0 0 6px 6px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
     <strong>Legend:</strong>
@@ -647,7 +659,7 @@ async function loadLiveAlerts(){
     return;
   }
   alerts.sort((a,b_)=>(a.properties.severity==='Extreme'?0:1)-(b_.properties.severity==='Extreme'?0:1));
-  window._liveAbbrs=new Set();alerts.forEach(a=>xStates(a).forEach(s=>window._liveAbbrs.add(s)));{const _ex=new Set(STATE_DATA.map(s=>s.abbr));window._liveAbbrs.forEach(ab=>{if(!_ex.has(ab)){const _f=alerts.find(a=>xStates(a).includes(ab));if(_f){const _q=_f.properties,_imp=impactOf(_q.severity,_q.event),_pct=(_imp.lbl==="HIGH"||_imp.lbl==="EXTREME")?74:52,_sname=(ZIP_REF.length?(ZIP_REF.find(function(z){return z[3]===ab;})||{})[2]:null)||ab;STATE_DATA.push({abbr:ab,state:_sname,impact:_pct,level:_imp.lbl,weather:_q.headline||_q.event||"Active NOAA Alert",noaa:"ACTIVE",ground:_imp.status,express:_imp.status,start:_q.onset?fmtDt(_q.onset):"—",end:_q.expires?fmtDt(_q.expires):"—",ends_iso:_q.expires||"",pct:_pct,counties:(_q.areaDesc||"").split(";").map(function(s){return s.trim();}).filter(Boolean).slice(0,20),note:"Live NOAA alert — verify at fedex.com/service-alerts"});}}})}if(typeof renderStates==="function")renderStates();if(typeof renderMap==="function")renderMap();if(typeof filterZips==="function")filterZips();const _ks=document.getElementById('k-states');if(_ks)_ks.textContent=STATE_DATA.length;const _nonRfAbbrs=new Set(STATE_DATA.filter(function(s){return(s.weather||'').toLowerCase().indexOf('red flag')<0;}).map(function(s){return s.abbr;}));const _kc=[..._nonRfAbbrs].filter(function(ab){return(TRANSIT[ab]||{}).periRisk==='CRITICAL';}).length;const _kh=[..._nonRfAbbrs].filter(function(ab){return(TRANSIT[ab]||{}).periRisk==='HIGH';}).length;const _kcc=document.getElementById('k-crit');const _khh=document.getElementById('k-high');if(_kcc)_kcc.textContent=_kc;if(_khh)_khh.textContent=_kh;
+  window._liveAbbrs=new Set();alerts.forEach(a=>xStates(a).forEach(s=>window._liveAbbrs.add(s)));{const _ex=new Set(STATE_DATA.map(s=>s.abbr));window._liveAbbrs.forEach(ab=>{if(!_ex.has(ab)){const _f=alerts.find(a=>xStates(a).includes(ab));if(_f){const _q=_f.properties,_imp=impactOf(_q.severity,_q.event),_pct=(_imp.lbl==="HIGH"||_imp.lbl==="EXTREME")?74:52,_sname=(ZIP_REF.length?(ZIP_REF.find(function(z){return z[3]===ab;})||{})[2]:null)||ab;STATE_DATA.push({abbr:ab,state:_sname,impact:_pct,level:_imp.lbl,weather:_q.headline||_q.event||"Active NOAA Alert",noaa:"ACTIVE",ground:_imp.status,express:_imp.status,start:_q.onset?fmtDt(_q.onset):"—",end:_q.expires?fmtDt(_q.expires):"—",ends_iso:_q.expires||"",pct:_pct,counties:(_q.areaDesc||"").split(";").map(function(s){return s.trim();}).filter(Boolean).slice(0,20),note:"Live NOAA alert — verify at fedex.com/service-alerts"});}}})}if(typeof renderStates==="function")renderStates();if(typeof renderMap==="function")renderMap();if(typeof filterZips==="function")filterZips();if(typeof renderSPC==="function")renderSPC();const _ks=document.getElementById('k-states');if(_ks)_ks.textContent=STATE_DATA.length;const _nonRfAbbrs=new Set(STATE_DATA.filter(function(s){return(s.weather||'').toLowerCase().indexOf('red flag')<0;}).map(function(s){return s.abbr;}));const _kc=[..._nonRfAbbrs].filter(function(ab){return(TRANSIT[ab]||{}).periRisk==='CRITICAL';}).length;const _kh=[..._nonRfAbbrs].filter(function(ab){return(TRANSIT[ab]||{}).periRisk==='HIGH';}).length;const _kcc=document.getElementById('k-crit');const _khh=document.getElementById('k-high');if(_kcc)_kcc.textContent=_kc;if(_khh)_khh.textContent=_kh;
   wrap.innerHTML=(()=>{
   const groups={};
   alerts.forEach(a=>{
@@ -658,7 +670,7 @@ async function loadLiveAlerts(){
     xStates(a).forEach(s=>{groups[ev].allSts.add(s);if(TRANSIT[s])groups[ev].chaffected.add(s);});
     groups[ev].alerts.push(a);
   });
-  return Object.values(groups).map((g,i)=>{
+  return Object.values(groups).filter(g=>g.allSts.size>0).map((g,i)=>{
     const imp=g.imp,sts=[...g.allSts],ch=[...g.chaffected];
     const details=g.alerts.map((a,j)=>{
       const p=a.properties,aSts=xStates(a);
@@ -699,36 +711,26 @@ async function loadLiveAlerts(){
 
 
 // ═══ OUTLOOK TABLE ═══════════════════════════════════════
-function renderOutlook(){
-  const hdr = document.getElementById('outlook-hdr');
-  const tb  = document.getElementById('outlook-tbody');
-  if(!hdr || !tb) return;
-  const ts = document.getElementById('lastUpdated');
-  const now = new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'});
-  hdr.textContent = '7-Day Outlook — Chicago Route Impact (NOAA Data, ' + now + ')';
-  if(!STATE_DATA.length){
-    tb.innerHTML='<tr><td colspan="8" style="padding:18px;text-align:center;color:#107C41;font-weight:bold;">✅ No active severe weather alerts affecting Chicago-origin routes. Routes are clear.</td></tr>';
+function renderSPC(){
+  const el=document.getElementById('spc-states-list');
+  if(!el)return;
+  const severe=STATE_DATA.filter(function(s){
+    return (s.weather||'').toLowerCase().indexOf('red flag')<0 && (s.level==='EXTREME'||s.level==='HIGH'||s.level==='MODERATE-HIGH');
+  });
+  if(!severe.length){
+    el.innerHTML='<div style="color:#107C41;font-size:0.82rem;padding:8px 0">✅ No states in severe or extreme outlook based on current NOAA data.</div>';
     return;
   }
-  // Group by noaa risk level for display
-  tb.innerHTML = STATE_DATA.map((s,i)=>{
-    const tr = TRANSIT[s.abbr]||{};
-    const pr = tr.periRisk||'MODERATE';
-    const periCls = PERI_CLR[pr]||'b-peri-mod';
-    const noaaCls = NOAA_B[s.noaa]||'b-low';
-    return `<tr class="${i%2?'even':''}">
-      <td><strong>${s.weather.split('/')[0].trim()}</strong></td>
-      <td>${b(s.noaa, noaaCls)}</td>
-      <td>${s.abbr}</td>
-      <td style="font-size:0.72rem;max-width:220px">${s.weather}</td>
-      <td style="white-space:nowrap;font-size:0.72rem">${s.start||'—'}<br>– ${s.end||'—'}</td>
-      <td>${bs(s.express)}</td>
-      <td>${bs(s.ground)}</td>
-      <td>${bp(pr)}</td>
-    </tr>`;
+  const byLevel={};
+  severe.forEach(function(s){if(!byLevel[s.level])byLevel[s.level]=[];byLevel[s.level].push(s.abbr);});
+  const order=['EXTREME','HIGH','MODERATE-HIGH'];
+  const colors={EXTREME:'#C00000',HIGH:'#E26B0A','MODERATE-HIGH':'#F4B942'};
+  el.innerHTML=order.filter(function(l){return byLevel[l];}).map(function(l){
+    const abbrs=[...new Set(byLevel[l])].join(', ');
+    return '<div style="margin-bottom:10px"><span style="background:'+colors[l]+';color:#fff;padding:3px 9px;border-radius:3px;font-size:0.72rem;font-weight:700">'+l+'</span>'
+      +'<span style="margin-left:9px;font-size:0.82rem;color:#333">'+abbrs+'</span></div>';
   }).join('');
 }
-
 // ═══ INIT ════════════════════════════════════════════════
 function loadAll(){
   // Purge expired STATE_DATA entries on every load/refresh
@@ -754,7 +756,7 @@ function loadAll(){
     });
     if(cur) sel.value=cur;
   }
-  renderOutlook();
+  renderSPC();
   filterZips();
   renderStates();
   renderMap();
