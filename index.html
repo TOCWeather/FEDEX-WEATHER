@@ -86,6 +86,13 @@ header .sub{font-size:0.72rem;opacity:.85;margin-top:2px}
 .b-peri-crit{background:#C00000;color:#fff}.b-peri-high{background:#E26B0A;color:#fff}
 .b-peri-mod{background:#F4B942;color:#333}.b-peri-low{background:#107C41;color:#fff}
 .tbl-wrap{overflow-x:auto}
+tr.fdx-suspended td{background:#fff0f0!important;border-left:4px solid #C00000}
+tr.fdx-delayed td{background:#fff6ee!important;border-left:4px solid #E26B0A}
+tr.fdx-impacted td{background:#fffde7!important;border-left:4px solid #F4B942}
+.fdx-card{border:1px solid #ddd;border-radius:6px;padding:12px 16px;margin-bottom:10px;background:#fff;border-left-width:5px}
+.fdx-card.fdx-card-suspended{border-left-color:#C00000;background:#fff8f8}
+.fdx-card.fdx-card-delayed{border-left-color:#E26B0A;background:#fff9f5}
+.fdx-card.fdx-card-impacted{border-left-color:#F4B942;background:#fffef0}
 table{width:100%;border-collapse:collapse;font-size:0.77rem}
 thead tr{background:#1F3864;color:#fff}
 th{padding:8px 9px;text-align:left;font-size:0.7rem;font-weight:700;white-space:nowrap;cursor:pointer;user-select:none}
@@ -143,6 +150,7 @@ td.center{text-align:center}
   <div class="tab" onclick="showTab('states')">🗺 State Summary</div>
   <div class="tab" onclick="showTab('map')">🌎 Impact Map</div>
   <div class="tab" onclick="showTab('chart')">📈 Perishable Risk</div>
+  <div class="tab" onclick="showTab('fedex')">🚚 FedEx Alerts</div>
 </div>
 
 <!-- DASHBOARD -->
@@ -330,6 +338,20 @@ td.center{text-align:center}
   </div>
 </div>
 
+<!-- FEDEX ALERTS -->
+<div class="pane" id="pane-fedex">
+  <div class="sec-hdr">🚚 FedEx Service Impact — Chicago-Origin Routes</div>
+  <div class="sec-body" style="padding:14px">
+    <div style="background:#fff8e1;border:1px solid #f9a825;border-radius:4px;padding:8px 14px;margin-bottom:14px;font-size:0.78rem;line-height:1.6">
+      ⚠️ <strong>Impact levels are derived from active NOAA weather severity.</strong>
+      Always confirm current shipping status at
+      <a href="https://www.fedex.com/en-us/service-alerts.html" target="_blank" rel="noopener" style="color:#4D148C;font-weight:700">fedex.com/service-alerts ↗</a>
+      before dispatching perishable orders. Call FedEx at <strong>1-800-463-3339</strong> to hold or reroute packages.
+    </div>
+    <div id="fedex-cards"></div>
+  </div>
+</div>
+
 <!-- CHART -->
 <div class="pane" id="pane-chart">
   <div class="sec-hdr">Perishable Spoilage Risk by State — Chicago Origin</div>
@@ -396,7 +418,7 @@ function periOfAbbr(abbr){return (TRANSIT[abbr]||{}).periRisk||'MODERATE';}
 
 // ═══ TABS ════════════════════════════════════════════════
 function showTab(t){
-  const names=['dashboard','zips','states','map','chart'];
+  const names=['dashboard','zips','states','map','chart','fedex'];
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',names[i]===t));
   document.querySelectorAll('.pane').forEach(el=>el.classList.remove('active'));
   document.getElementById('pane-'+t).classList.add('active');
@@ -418,8 +440,12 @@ function renderZipTable(data){
   if(!data.length){tb.innerHTML='<tr><td colspan="14" class="nodata">No ZIPs match filters.</td></tr>';return;}
   tb.innerHTML=data.map((r,i)=>{
     const pr=periFromRow(r);
-    return`<tr class="${i%2?'even':''}">
-      <td><strong>${r[0]}</strong></td>
+    const gSts=r[6]||'';
+    const fdxClass=gSts==='SUSPENDED'?'fdx-suspended':gSts==='DELAYED'?'fdx-delayed':gSts==='POSS. IMPACT'?'fdx-impacted':(i%2?'even':'');
+    const fdxBadge=gSts==='SUSPENDED'?'<span style="font-size:0.6rem;font-weight:700;color:#C00000;margin-left:4px">🚚 FDX</span>':
+                   gSts==='DELAYED'?'<span style="font-size:0.6rem;font-weight:700;color:#E26B0A;margin-left:4px">🚚 FDX</span>':'';
+    return`<tr class="${fdxClass}">
+      <td><strong>${r[0]}</strong>${fdxBadge}</td>
       <td>${r[1]}</td><td>${r[3]}</td>
       <td>${bl(r[4])}</td>
       <td style="font-size:0.7rem;max-width:180px">${r[5]}</td>
@@ -638,6 +664,44 @@ function renderChart(){
   }).join('');
 }
 
+// ═══ FEDEX ALERTS ════════════════════════════════════════
+function renderFedEx(){
+  const seen={};
+  STATE_DATA.forEach(s=>{
+    if((s.weather||'').toLowerCase().indexOf('red flag')>=0)return;
+    if(!seen[s.abbr]||(s.pct||0)>(seen[s.abbr].pct||0))seen[s.abbr]=s;
+  });
+  const rank=x=>x==='SUSPENDED'?0:x==='DELAYED'?1:x==='POSS. IMPACT'?2:3;
+  const states=Object.values(seen).sort((a,b)=>rank(a.ground)-rank(b.ground)||b.pct-a.pct);
+  const el=document.getElementById('fedex-cards');
+  if(!el)return;
+  if(!states.length){
+    el.innerHTML='<div style="padding:20px;text-align:center;color:#107C41;font-weight:bold;">✅ No active FedEx service impacts — all Chicago-origin routes are clear.</div>';
+    return;
+  }
+  el.innerHTML=states.map(s=>{
+    const gr=s.ground||'—';
+    const ex=s.express||'—';
+    const cardClass=gr==='SUSPENDED'?'fdx-card-suspended':gr==='DELAYED'?'fdx-card-delayed':'fdx-card-impacted';
+    const ctyList=(s.counties||[]).slice().sort().join(', ')||'—';
+    const ctyCount=(s.counties||[]).length;
+    return`<div class="fdx-card ${cardClass}">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <strong style="font-size:0.95rem;min-width:160px">${s.state} <span style="color:#888;font-weight:400">(${s.abbr})</span></strong>
+        ${bs(gr).replace('badge','badge').replace('>','> Ground: ')}
+        ${bs(ex).replace('>','> Express: ')}
+        <a href="https://www.fedex.com/en-us/service-alerts.html" target="_blank" rel="noopener"
+           style="margin-left:auto;font-size:0.75rem;color:#4D148C;font-weight:700;white-space:nowrap">Verify on FedEx.com →</a>
+      </div>
+      <div style="margin-top:7px;font-size:0.75rem;color:#444">${s.weather||'—'}</div>
+      <div style="margin-top:5px;font-size:0.7rem;color:#888">
+        <strong>${ctyCount} ${ctyCount===1?'county':'counties'}:</strong> ${ctyList}
+      </div>
+      <div style="margin-top:3px;font-size:0.7rem;color:#aaa">Alert ends: ${s.end||'—'}</div>
+    </div>`;
+  }).join('');
+}
+
 // ═══ LIVE NOAA ═══════════════════════════════════════════
 function impactOf(sev,ev){
   const e=(ev||'').toLowerCase();
@@ -691,7 +755,7 @@ async function loadLiveAlerts(){
     return;
   }
   alerts.sort((a,b_)=>(a.properties.severity==='Extreme'?0:1)-(b_.properties.severity==='Extreme'?0:1));
-  window._liveAbbrs=new Set();alerts.forEach(a=>xStates(a).forEach(s=>window._liveAbbrs.add(s)));{const _ex=new Set(STATE_DATA.map(s=>s.abbr));window._liveAbbrs.forEach(ab=>{if(!_ex.has(ab)){const _f=alerts.find(a=>xStates(a).includes(ab));if(_f){const _q=_f.properties,_imp=impactOf(_q.severity,_q.event),_pct=(_imp.lbl==="HIGH"||_imp.lbl==="EXTREME")?74:52,_sname=(ZIP_REF.length?(ZIP_REF.find(function(z){return z[3]===ab;})||{})[2]:null)||ab;STATE_DATA.push({abbr:ab,state:_sname,impact:_pct,level:_imp.lbl,weather:_q.headline||_q.event||"Active NOAA Alert",noaa:"ACTIVE",ground:_imp.status,express:_imp.status,start:_q.onset?fmtDt(_q.onset):"—",end:_q.expires?fmtDt(_q.expires):"—",ends_iso:_q.expires||"",pct:_pct,counties:(_q.areaDesc||"").split(";").map(function(s){return s.trim();}).filter(Boolean).slice(0,20),note:"Live NOAA alert — verify at fedex.com/service-alerts"});}}})}if(typeof renderStates==="function")renderStates();if(typeof renderMap==="function")renderMap();if(typeof filterZips==="function")filterZips();if(typeof renderSPC==="function")renderSPC();if(typeof renderWPC==="function")renderWPC();const _ks=document.getElementById('k-states');if(_ks)_ks.textContent=STATE_DATA.length;const _nonRfAbbrs=new Set(STATE_DATA.filter(function(s){return(s.weather||'').toLowerCase().indexOf('red flag')<0;}).map(function(s){return s.abbr;}));const _kc=[..._nonRfAbbrs].filter(function(ab){return(TRANSIT[ab]||{}).periRisk==='CRITICAL';}).length;const _kh=[..._nonRfAbbrs].filter(function(ab){return(TRANSIT[ab]||{}).periRisk==='HIGH';}).length;const _kcc=document.getElementById('k-crit');const _khh=document.getElementById('k-high');if(_kcc)_kcc.textContent=_kc;if(_khh)_khh.textContent=_kh;
+  window._liveAbbrs=new Set();alerts.forEach(a=>xStates(a).forEach(s=>window._liveAbbrs.add(s)));{const _ex=new Set(STATE_DATA.map(s=>s.abbr));window._liveAbbrs.forEach(ab=>{if(!_ex.has(ab)){const _f=alerts.find(a=>xStates(a).includes(ab));if(_f){const _q=_f.properties,_imp=impactOf(_q.severity,_q.event),_pct=(_imp.lbl==="HIGH"||_imp.lbl==="EXTREME")?74:52,_sname=(ZIP_REF.length?(ZIP_REF.find(function(z){return z[3]===ab;})||{})[2]:null)||ab;STATE_DATA.push({abbr:ab,state:_sname,impact:_pct,level:_imp.lbl,weather:_q.headline||_q.event||"Active NOAA Alert",noaa:"ACTIVE",ground:_imp.status,express:_imp.status,start:_q.onset?fmtDt(_q.onset):"—",end:_q.expires?fmtDt(_q.expires):"—",ends_iso:_q.expires||"",pct:_pct,counties:(_q.areaDesc||"").split(";").map(function(s){return s.trim();}).filter(Boolean).slice(0,20),note:"Live NOAA alert — verify at fedex.com/service-alerts"});}}})}if(typeof renderStates==="function")renderStates();if(typeof renderMap==="function")renderMap();if(typeof filterZips==="function")filterZips();if(typeof renderSPC==="function")renderSPC();if(typeof renderWPC==="function")renderWPC();if(typeof renderChart==="function")renderChart();if(typeof renderFedEx==="function")renderFedEx();const _ks=document.getElementById('k-states');if(_ks)_ks.textContent=STATE_DATA.length;const _nonRfAbbrs=new Set(STATE_DATA.filter(function(s){return(s.weather||'').toLowerCase().indexOf('red flag')<0;}).map(function(s){return s.abbr;}));const _kc=[..._nonRfAbbrs].filter(function(ab){return(TRANSIT[ab]||{}).periRisk==='CRITICAL';}).length;const _kh=[..._nonRfAbbrs].filter(function(ab){return(TRANSIT[ab]||{}).periRisk==='HIGH';}).length;const _kcc=document.getElementById('k-crit');const _khh=document.getElementById('k-high');if(_kcc)_kcc.textContent=_kc;if(_khh)_khh.textContent=_kh;
   wrap.innerHTML=(()=>{
   const groups={};
   alerts.forEach(a=>{
@@ -829,6 +893,7 @@ function loadAll(){
   renderStates();
   renderMap();
   renderChart();
+  renderFedEx();
   loadLiveAlerts();
 }
 // ═══ STARTUP — load zips.json then init ══════════════════
