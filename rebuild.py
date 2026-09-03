@@ -239,8 +239,8 @@ def build_state_data(alerts_geojson):
             if raw:
                 try:
                     dt = datetime.datetime.fromisoformat(raw.replace("Z", "+00:00"))
-                    offset = datetime.timedelta(hours=-5)
-                    dt_local = dt + offset
+                    CDT = datetime.timezone(datetime.timedelta(hours=-5))
+                    dt_local = dt.astimezone(CDT)
                     r[key + "_fmt"] = dt_local.strftime("%a %b %-d  %-I:%M %p CDT")
                 except Exception:
                     r[key + "_fmt"] = raw[:16]
