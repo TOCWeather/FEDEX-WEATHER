@@ -78,32 +78,32 @@ STATE_NAMES = {
 # Interruption probability by NWS event type and severity
 EVENT_IMPACT = {
     # Winter — shipping impact
-    "Blizzard Warning":            ("HIGH",          80, "DELAYED",      "DELAYED"),
-    "Winter Storm Warning":        ("HIGH",          74, "DELAYED",      "DELAYED"),
-    "Winter Storm Watch":          ("MODERATE-HIGH", 60, "POSS. IMPACT", "POSS. IMPACT"),
-    "Ice Storm Warning":           ("HIGH",          78, "DELAYED",      "DELAYED"),
-    "Winter Weather Advisory":     ("MODERATE-HIGH", 50, "POSS. IMPACT", "POSS. IMPACT"),
-    "Heavy Snow Warning":          ("HIGH",          72, "DELAYED",      "DELAYED"),
-    "Lake Effect Snow Warning":    ("HIGH",          70, "DELAYED",      "DELAYED"),
-    "Freezing Rain Advisory":      ("MODERATE-HIGH", 52, "POSS. IMPACT", "POSS. IMPACT"),
+    "Blizzard Warning":            ("HIGH",          80, "IMPACT POSSIBLE",      "IMPACT POSSIBLE"),
+    "Winter Storm Warning":        ("HIGH",          74, "IMPACT POSSIBLE",      "IMPACT POSSIBLE"),
+    "Winter Storm Watch":          ("MODERATE-HIGH", 60, "IMPACT POSSIBLE", "IMPACT POSSIBLE"),
+    "Ice Storm Warning":           ("HIGH",          78, "IMPACT POSSIBLE",      "IMPACT POSSIBLE"),
+    "Winter Weather Advisory":     ("MODERATE-HIGH", 50, "IMPACT POSSIBLE", "IMPACT POSSIBLE"),
+    "Heavy Snow Warning":          ("HIGH",          72, "IMPACT POSSIBLE",      "IMPACT POSSIBLE"),
+    "Lake Effect Snow Warning":    ("HIGH",          70, "IMPACT POSSIBLE",      "IMPACT POSSIBLE"),
+    "Freezing Rain Advisory":      ("MODERATE-HIGH", 52, "IMPACT POSSIBLE", "IMPACT POSSIBLE"),
     # Hurricane/tropical — shipping impact
-    "Hurricane Warning":           ("HIGH",          85, "DELAYED",      "DELAYED"),
-    "Hurricane Watch":             ("MODERATE-HIGH", 65, "POSS. IMPACT", "POSS. IMPACT"),
-    "Tropical Storm Warning":      ("HIGH",          72, "DELAYED",      "DELAYED"),
-    "Tropical Storm Watch":        ("MODERATE-HIGH", 58, "POSS. IMPACT", "POSS. IMPACT"),
-    "Hurricane Local Statement":   ("MODERATE-HIGH", 60, "POSS. IMPACT", "POSS. IMPACT"),
+    "Hurricane Warning":           ("HIGH",          85, "IMPACT POSSIBLE",      "IMPACT POSSIBLE"),
+    "Hurricane Watch":             ("MODERATE-HIGH", 65, "IMPACT POSSIBLE", "IMPACT POSSIBLE"),
+    "Tropical Storm Warning":      ("HIGH",          72, "IMPACT POSSIBLE",      "IMPACT POSSIBLE"),
+    "Tropical Storm Watch":        ("MODERATE-HIGH", 58, "IMPACT POSSIBLE", "IMPACT POSSIBLE"),
+    "Hurricane Local Statement":   ("MODERATE-HIGH", 60, "IMPACT POSSIBLE", "IMPACT POSSIBLE"),
     # Fire — shipping impact
-    "Red Flag Warning":            ("HIGH",          68, "DELAYED",      "DELAYED"),
-    "Fire Weather Watch":          ("MODERATE-HIGH", 52, "POSS. IMPACT", "POSS. IMPACT"),
+    "Red Flag Warning":            ("HIGH",          68, "IMPACT POSSIBLE",      "IMPACT POSSIBLE"),
+    "Fire Weather Watch":          ("MODERATE-HIGH", 52, "IMPACT POSSIBLE", "IMPACT POSSIBLE"),
     # Major flooding — shipping impact
-    "Flash Flood Warning":         ("HIGH",          65, "DELAYED",      "DELAYED"),
-    "Flash Flood Emergency":       ("HIGH",          82, "DELAYED",      "DELAYED"),
-    "Flood Warning":               ("MODERATE-HIGH", 55, "POSS. IMPACT", "POSS. IMPACT"),
-    "River Flood Warning":         ("MODERATE-HIGH", 55, "POSS. IMPACT", "POSS. IMPACT"),
-    "Areal Flood Warning":         ("MODERATE-HIGH", 52, "POSS. IMPACT", "POSS. IMPACT"),
+    "Flash Flood Warning":         ("HIGH",          65, "IMPACT POSSIBLE",      "IMPACT POSSIBLE"),
+    "Flash Flood Emergency":       ("HIGH",          82, "IMPACT POSSIBLE",      "IMPACT POSSIBLE"),
+    "Flood Warning":               ("MODERATE-HIGH", 55, "IMPACT POSSIBLE", "IMPACT POSSIBLE"),
+    "River Flood Warning":         ("MODERATE-HIGH", 55, "IMPACT POSSIBLE", "IMPACT POSSIBLE"),
+    "Areal Flood Warning":         ("MODERATE-HIGH", 52, "IMPACT POSSIBLE", "IMPACT POSSIBLE"),
 }
 
-DEFAULT_SEVERE  = ("HIGH",  70, "DELAYED",   "DELAYED")     # unknown Extreme events — keep as safety net
+DEFAULT_SEVERE  = ("HIGH",  70, "IMPACT POSSIBLE",   "IMPACT POSSIBLE")     # unknown Extreme events — keep as safety net
 DEFAULT_MODHI   = ("LOW",    0, "MONITORING","MONITORING")  # unknown Severe/Moderate — no shipping impact
 
 

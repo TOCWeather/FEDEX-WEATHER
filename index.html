@@ -239,8 +239,8 @@ td.center{text-align:center}
     <table>
       <thead><tr><th>Risk Level</th><th>FedEx Status</th><th>Interrup. Prob.</th><th>Transit from Chicago</th><th>Perishable Risk</th><th>Action</th></tr></thead>
       <tbody>
-        <tr><td><span class="badge b-high">HIGH</span></td><td><span class="badge b-delayed">POSS. DELAY</span></td><td>70–82%</td><td>1–4 days (Express 1–2 days)</td><td><span class="badge b-peri-crit">CRITICAL</span></td><td>Contact FedEx · Consider hold at facility · Alert customer</td></tr>
-        <tr class="even"><td><span class="badge b-modhi">MODERATE-HIGH</span></td><td><span class="badge b-impacted">POSS. IMPACT</span></td><td>48–65%</td><td>1–3 days (Express O/N–1 day)</td><td><span class="badge b-peri-high">HIGH</span></td><td>Monitor FedEx ZIP tool · Proactive customer communication</td></tr>
+        <tr><td><span class="badge b-high">HIGH</span></td><td><span class="badge b-delayed">IMPACT POSSIBLE</span></td><td>70–82%</td><td>1–4 days (Express 1–2 days)</td><td><span class="badge b-peri-crit">CRITICAL</span></td><td>Contact FedEx · Consider hold at facility · Alert customer</td></tr>
+        <tr class="even"><td><span class="badge b-modhi">MODERATE-HIGH</span></td><td><span class="badge b-impacted">IMPACT POSSIBLE</span></td><td>48–65%</td><td>1–3 days (Express O/N–1 day)</td><td><span class="badge b-peri-high">HIGH</span></td><td>Monitor FedEx ZIP tool · Proactive customer communication</td></tr>
       </tbody>
     </table>
   </div>
@@ -399,8 +399,8 @@ const ZIP_DATA = [];
 
 // ═══ HELPERS ════════════════════════════════════════════
 const LVL_B={HIGH:'b-high','MODERATE-HIGH':'b-modhi',EXTREME:'b-extreme'};
-const STS_B={DELAYED:'b-delayed',IMPACTED:'b-impacted',SUSPENDED:'b-suspended',MONITORING:'b-low'};
-const STS_LBL={DELAYED:'POSS. DELAY',IMPACTED:'POSS. IMPACT',SUSPENDED:'SUSPENDED',MONITORING:'MONITORING'};
+const STS_B={DELAYED:'b-delayed',IMPACTED:'b-delayed',SUSPENDED:'b-delayed','IMPACT POSSIBLE':'b-delayed',MONITORING:'b-low'};
+const STS_LBL={DELAYED:'IMPACT POSSIBLE',IMPACTED:'IMPACT POSSIBLE',SUSPENDED:'IMPACT POSSIBLE','IMPACT POSSIBLE':'IMPACT POSSIBLE',MONITORING:'MONITORING'};
 const NOAA_B={ENHANCED:'b-enhanced',SLIGHT:'b-slight','SECONDARY-15':'b-secondary'};
 const BAR_C={HIGH:'#E26B0A','MODERATE-HIGH':'#F4B942',EXTREME:'#C00000'};
 
@@ -437,9 +437,9 @@ function renderZipTable(data){
   tb.innerHTML=data.map((r,i)=>{
     const pr=periFromRow(r);
     const gSts=r[6]||'';
-    const fdxClass=gSts==='SUSPENDED'?'fdx-suspended':gSts==='DELAYED'?'fdx-delayed':gSts==='POSS. IMPACT'?'fdx-impacted':(i%2?'even':'');
-    const fdxBadge=gSts==='SUSPENDED'?'<span style="font-size:0.6rem;font-weight:700;color:#C00000;margin-left:4px">🚚 FDX</span>':
-                   gSts==='DELAYED'?'<span style="font-size:0.6rem;font-weight:700;color:#E26B0A;margin-left:4px">🚚 FDX</span>':'';
+    const isImpacted=gSts&&gSts!=='MONITORING';
+    const fdxClass=isImpacted?'fdx-delayed':(i%2?'even':'');
+    const fdxBadge=isImpacted?'<span style="font-size:0.6rem;font-weight:700;color:#E26B0A;margin-left:4px">🚚 FDX</span>':'';
     return`<tr class="${fdxClass}">
       <td><strong>${r[0]}</strong>${fdxBadge}</td>
       <td>${r[1]}</td><td>${r[3]}</td>
@@ -480,8 +480,8 @@ const hazardF=(document.getElementById('zip-hazard')||{}).value||'';
       return [r[0],r[1],r[2],r[3],
         sd.level||'MODERATE-HIGH',
         sd.weather||'Severe Weather',
-        sd.ground||'POSS. IMPACT',
-        sd.express||'POSS. IMPACT',
+        sd.ground||'IMPACT POSSIBLE',
+        sd.express||'IMPACT POSSIBLE',
         sd.start||'—', sd.end||'—',
         sd.pct||50, (TRANSIT[r[3]]||{}).chiGround||2,
         sd.note||''
@@ -667,7 +667,7 @@ function renderFedEx(){
     if((s.weather||'').toLowerCase().indexOf('red flag')>=0)return;
     if(!seen[s.abbr]||(s.pct||0)>(seen[s.abbr].pct||0))seen[s.abbr]=s;
   });
-  const rank=x=>x==='SUSPENDED'?0:x==='DELAYED'?1:x==='POSS. IMPACT'?2:3;
+  const rank=x=>x==='MONITORING'?1:0;
   const states=Object.values(seen).sort((a,b)=>rank(a.ground)-rank(b.ground)||b.pct-a.pct);
   const el=document.getElementById('fedex-cards');
   if(!el)return;
@@ -678,7 +678,7 @@ function renderFedEx(){
   el.innerHTML=states.map(s=>{
     const gr=s.ground||'—';
     const ex=s.express||'—';
-    const cardClass=gr==='SUSPENDED'?'fdx-card-suspended':gr==='DELAYED'?'fdx-card-delayed':'fdx-card-impacted';
+    const cardClass=gr==='MONITORING'?'fdx-card-impacted':'fdx-card-delayed';
     const ctyList=(s.counties||[]).slice().sort().join(', ')||'—';
     const ctyCount=(s.counties||[]).length;
     return`<div class="fdx-card ${cardClass}">
@@ -708,9 +708,9 @@ function impactOf(sev,ev){
   const isFire=e.includes('fire')||e.includes('red flag');
   const isFlood=e.includes('flood');
   if(!isWinter&&!isTropical&&!isFire&&!isFlood)return{lbl:'LOW',status:'MONITORING',bc:'#ccc'};
-  if(sev==='Extreme')return{lbl:'EXTREME',status:'SUSPENDED',bc:'#C00000'};
-  if(isWinter||isTropical||sev==='Severe')return{lbl:'HIGH',status:'DELAYED',bc:'#E26B0A'};
-  return{lbl:'MODERATE-HIGH',status:'POSS. IMPACT',bc:'#F4B942'};
+  if(sev==='Extreme')return{lbl:'EXTREME',status:'IMPACT POSSIBLE',bc:'#C00000'};
+  if(isWinter||isTropical||sev==='Severe')return{lbl:'HIGH',status:'IMPACT POSSIBLE',bc:'#E26B0A'};
+  return{lbl:'MODERATE-HIGH',status:'IMPACT POSSIBLE',bc:'#F4B942'};
 }
 function xStates(a){
   const US=new Set('AL,AZ,AR,CA,CO,CT,DE,FL,GA,ID,IL,IN,IA,KS,KY,LA,ME,MD,MA,MI,MN,MS,MO,MT,NE,NV,NH,NJ,NM,NY,NC,ND,OH,OK,OR,PA,RI,SC,SD,TN,TX,UT,VT,VA,WA,WV,WI,WY,DC,AK,HI,PR'.split(','));
