@@ -701,13 +701,16 @@ function renderFedEx(){
 // ═══ LIVE NOAA ═══════════════════════════════════════════
 function impactOf(sev,ev){
   const e=(ev||'').toLowerCase();
-  if(e.includes('red flag'))return{lbl:'LOW',status:'MONITORING',bc:'#ccc'};
+  const isWinter=e.includes('blizzard')||e.includes('winter storm')||e.includes('winter weather')||
+    e.includes('ice storm')||e.includes('freezing rain')||e.includes('sleet')||
+    e.includes('heavy snow')||e.includes('lake effect snow');
+  const isTropical=e.includes('hurricane')||e.includes('tropical storm')||e.includes('typhoon');
+  const isFire=e.includes('fire')||e.includes('red flag');
+  const isFlood=e.includes('flood');
+  if(!isWinter&&!isTropical&&!isFire&&!isFlood)return{lbl:'LOW',status:'MONITORING',bc:'#ccc'};
   if(sev==='Extreme')return{lbl:'EXTREME',status:'SUSPENDED',bc:'#C00000'};
-  if(sev==='Severe'){
-    if(e.includes('tornado')||e.includes('blizzard')||e.includes('ice'))return{lbl:'HIGH',status:'DELAYED',bc:'#E26B0A'};
-    return{lbl:'MODERATE-HIGH',status:'POSS. IMPACT',bc:'#F4B942'};
-  }
-  return{lbl:'LOW',status:'MONITORING',bc:'#ccc'};
+  if(isWinter||isTropical||sev==='Severe')return{lbl:'HIGH',status:'DELAYED',bc:'#E26B0A'};
+  return{lbl:'MODERATE-HIGH',status:'POSS. IMPACT',bc:'#F4B942'};
 }
 function xStates(a){
   const US=new Set('AL,AZ,AR,CA,CO,CT,DE,FL,GA,ID,IL,IN,IA,KS,KY,LA,ME,MD,MA,MI,MN,MS,MO,MT,NE,NV,NH,NJ,NM,NY,NC,ND,OH,OK,OR,PA,RI,SC,SD,TN,TX,UT,VT,VA,WA,WV,WI,WY,DC,AK,HI,PR'.split(','));

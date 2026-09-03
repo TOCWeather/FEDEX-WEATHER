@@ -77,35 +77,34 @@ STATE_NAMES = {
 
 # Interruption probability by NWS event type and severity
 EVENT_IMPACT = {
-    # Tornado-related
-    "Tornado Warning":        ("HIGH", 82, "DELAYED", "DELAYED"),
-    "Tornado Watch":          ("HIGH", 72, "DELAYED", "DELAYED"),
-    # Severe thunderstorm
-    "Severe Thunderstorm Warning": ("HIGH", 70, "DELAYED", "DELAYED"),
-    "Severe Thunderstorm Watch":   ("MODERATE-HIGH", 58, "POSS. IMPACT", "POSS. IMPACT"),
-    # Winter
-    "Blizzard Warning":       ("HIGH", 80, "DELAYED", "DELAYED"),
-    "Winter Storm Warning":   ("HIGH", 74, "DELAYED", "DELAYED"),
-    "Winter Storm Watch":     ("MODERATE-HIGH", 60, "POSS. IMPACT", "POSS. IMPACT"),
-    "Ice Storm Warning":      ("HIGH", 78, "DELAYED", "DELAYED"),
-    "Winter Weather Advisory":("MODERATE-HIGH", 50, "POSS. IMPACT", "POSS. IMPACT"),
-    # Wind
-    "High Wind Warning":      ("HIGH", 70, "DELAYED", "DELAYED"),
-    "High Wind Watch":        ("MODERATE-HIGH", 55, "POSS. IMPACT", "POSS. IMPACT"),
-    "Wind Advisory":          ("MODERATE-HIGH", 48, "POSS. IMPACT", "POSS. IMPACT"),
-    # Flood
-    "Flash Flood Warning":    ("MODERATE-HIGH", 60, "POSS. IMPACT", "POSS. IMPACT"),
-    "Flood Warning":          ("MODERATE-HIGH", 52, "POSS. IMPACT", "POSS. IMPACT"),
-    # Hurricane/tropical
-    "Hurricane Warning":      ("HIGH", 82, "DELAYED", "DELAYED"),
-    "Tropical Storm Warning": ("HIGH", 72, "DELAYED", "DELAYED"),
-    # Extreme heat/cold
-    "Excessive Heat Warning": ("MODERATE-HIGH", 48, "POSS. IMPACT", "POSS. IMPACT"),
-    "Extreme Cold Warning":   ("HIGH", 68, "DELAYED", "DELAYED"),
+    # Winter — shipping impact
+    "Blizzard Warning":            ("HIGH",          80, "DELAYED",      "DELAYED"),
+    "Winter Storm Warning":        ("HIGH",          74, "DELAYED",      "DELAYED"),
+    "Winter Storm Watch":          ("MODERATE-HIGH", 60, "POSS. IMPACT", "POSS. IMPACT"),
+    "Ice Storm Warning":           ("HIGH",          78, "DELAYED",      "DELAYED"),
+    "Winter Weather Advisory":     ("MODERATE-HIGH", 50, "POSS. IMPACT", "POSS. IMPACT"),
+    "Heavy Snow Warning":          ("HIGH",          72, "DELAYED",      "DELAYED"),
+    "Lake Effect Snow Warning":    ("HIGH",          70, "DELAYED",      "DELAYED"),
+    "Freezing Rain Advisory":      ("MODERATE-HIGH", 52, "POSS. IMPACT", "POSS. IMPACT"),
+    # Hurricane/tropical — shipping impact
+    "Hurricane Warning":           ("HIGH",          85, "DELAYED",      "DELAYED"),
+    "Hurricane Watch":             ("MODERATE-HIGH", 65, "POSS. IMPACT", "POSS. IMPACT"),
+    "Tropical Storm Warning":      ("HIGH",          72, "DELAYED",      "DELAYED"),
+    "Tropical Storm Watch":        ("MODERATE-HIGH", 58, "POSS. IMPACT", "POSS. IMPACT"),
+    "Hurricane Local Statement":   ("MODERATE-HIGH", 60, "POSS. IMPACT", "POSS. IMPACT"),
+    # Fire — shipping impact
+    "Red Flag Warning":            ("HIGH",          68, "DELAYED",      "DELAYED"),
+    "Fire Weather Watch":          ("MODERATE-HIGH", 52, "POSS. IMPACT", "POSS. IMPACT"),
+    # Major flooding — shipping impact
+    "Flash Flood Warning":         ("HIGH",          65, "DELAYED",      "DELAYED"),
+    "Flash Flood Emergency":       ("HIGH",          82, "DELAYED",      "DELAYED"),
+    "Flood Warning":               ("MODERATE-HIGH", 55, "POSS. IMPACT", "POSS. IMPACT"),
+    "River Flood Warning":         ("MODERATE-HIGH", 55, "POSS. IMPACT", "POSS. IMPACT"),
+    "Areal Flood Warning":         ("MODERATE-HIGH", 52, "POSS. IMPACT", "POSS. IMPACT"),
 }
 
-DEFAULT_SEVERE  = ("HIGH",          70, "DELAYED",      "DELAYED")
-DEFAULT_MODHI   = ("MODERATE-HIGH", 52, "POSS. IMPACT", "POSS. IMPACT")
+DEFAULT_SEVERE  = ("HIGH",  70, "DELAYED",   "DELAYED")     # unknown Extreme events — keep as safety net
+DEFAULT_MODHI   = ("LOW",    0, "MONITORING","MONITORING")  # unknown Severe/Moderate — no shipping impact
 
 
 def fetch_noaa_alerts():
