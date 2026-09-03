@@ -863,12 +863,24 @@ function renderWPC(){
   });
 }
 
+function isShippingAlert(weather){
+  const e=(weather||'').toLowerCase();
+  return e.includes('blizzard')||e.includes('winter storm')||e.includes('winter weather')||
+    e.includes('ice storm')||e.includes('freezing rain')||e.includes('sleet')||
+    e.includes('heavy snow')||e.includes('lake effect snow')||
+    e.includes('hurricane')||e.includes('tropical storm')||e.includes('typhoon')||
+    e.includes('fire')||e.includes('red flag')||e.includes('flood');
+}
 function loadAll(){
   // Purge expired STATE_DATA entries on every load/refresh
   const _now = Date.now();
   for(let i = STATE_DATA.length - 1; i >= 0; i--){
     const iso = STATE_DATA[i].ends_iso;
     if(iso && iso.length > 5){ try{ if(new Date(iso).getTime() < _now) STATE_DATA.splice(i,1); }catch(e){} }
+  }
+  // Purge entries for weather types that don't affect shipping
+  for(let i = STATE_DATA.length - 1; i >= 0; i--){
+    if(!isShippingAlert(STATE_DATA[i].weather)) STATE_DATA.splice(i,1);
   }
   const crit=[...new Set(STATE_DATA.filter(s=>(s.weather||'').toLowerCase().indexOf('red flag')<0).map(s=>s.abbr))].filter(ab=>(TRANSIT[ab]||{}).periRisk==='CRITICAL').length;
   const high=[...new Set(STATE_DATA.filter(s=>(s.weather||'').toLowerCase().indexOf('red flag')<0).map(s=>s.abbr))].filter(ab=>(TRANSIT[ab]||{}).periRisk==='HIGH').length;
