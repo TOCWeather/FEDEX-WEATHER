@@ -399,8 +399,8 @@ const ZIP_DATA = [];
 
 // ═══ HELPERS ════════════════════════════════════════════
 const LVL_B={HIGH:'b-high','MODERATE-HIGH':'b-modhi',EXTREME:'b-extreme'};
-const STS_B={DELAYED:'b-delayed',IMPACTED:'b-delayed',SUSPENDED:'b-delayed','IMPACT POSSIBLE':'b-delayed',MONITORING:'b-low'};
-const STS_LBL={DELAYED:'IMPACT POSSIBLE',IMPACTED:'IMPACT POSSIBLE',SUSPENDED:'IMPACT POSSIBLE','IMPACT POSSIBLE':'IMPACT POSSIBLE',MONITORING:'MONITORING'};
+const STS_B={DELAYED:'b-delayed',IMPACTED:'b-delayed',SUSPENDED:'b-delayed','IMPACT POSSIBLE':'b-delayed','POSS. IMPACT':'b-delayed',MONITORING:'b-low'};
+const STS_LBL={DELAYED:'IMPACT POSSIBLE',IMPACTED:'IMPACT POSSIBLE',SUSPENDED:'IMPACT POSSIBLE','IMPACT POSSIBLE':'IMPACT POSSIBLE','POSS. IMPACT':'IMPACT POSSIBLE',MONITORING:'MONITORING'};
 const NOAA_B={ENHANCED:'b-enhanced',SLIGHT:'b-slight','SECONDARY-15':'b-secondary'};
 const BAR_C={HIGH:'#E26B0A','MODERATE-HIGH':'#F4B942',EXTREME:'#C00000'};
 
@@ -482,7 +482,7 @@ const hazardF=(document.getElementById('zip-hazard')||{}).value||'';
         sd.weather||'Severe Weather',
         sd.ground||'IMPACT POSSIBLE',
         sd.express||'IMPACT POSSIBLE',
-        sd.start||'—', sd.end||'—',
+        sd.start||'—', (sd.ends_iso&&sd.ends_iso.length>5)?fmtDt(sd.ends_iso):(sd.end||'—'),
         sd.pct||50, (TRANSIT[r[3]]||{}).chiGround||2,
         sd.note||''
       ];
