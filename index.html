@@ -368,7 +368,7 @@ td.center{text-align:center}
           <th>State</th><th>ST</th><th>Impact %</th><th>Risk Level</th>
           <th>Weather Hazards</th><th>Ground</th><th>Express</th>
           <th>Ground Days (CHI)</th><th>Express Days (CHI)</th>
-          <th>Interrup %</th><th>Perishable Risk</th><th>NOAA</th><th>Hub Note</th>
+          <th>Interrup %</th><th>NOAA</th><th>Hub Note</th>
         </tr></thead>
         <tbody id="state-tbody"></tbody>
       </table>
@@ -618,12 +618,11 @@ function renderStates(){
       <td class="center">${tr.chiGround||'—'} day${tr.chiGround===1?'':'s'}</td>
       <td class="center">${tr.chiExpress||'—'} day${tr.chiExpress===1?'':'s'}</td>
       <td class="center"><strong>${s.pct}%</strong></td>
-      <td>${bp((s.weather||'').toLowerCase().indexOf('red flag')>=0?'LOW':(tr.periRisk||'MODERATE'))}</td>
       <td>${bn(s.noaa)}</td>
       <td class="td-note" style="font-size:0.7rem" title="${s.note}">${s.note}</td>
     </tr>
     <tr id="cd-${s.abbr}" class="county-detail" style="display:none">
-      <td colspan="13" style="background:#f8f9fa;padding:6px 16px;font-size:0.8rem"><strong>${(s.counties||[]).length} affected counties:</strong> ${(s.counties||[]).slice().sort().join(', ')||'—'}</td>
+      <td colspan="12" style="background:#f8f9fa;padding:6px 16px;font-size:0.8rem"><strong>${(s.counties||[]).length} affected counties:</strong> ${(s.counties||[]).slice().sort().join(', ')||'—'}</td>
     </tr>`;
   }).join('');
 }
