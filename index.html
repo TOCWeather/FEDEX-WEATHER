@@ -36,7 +36,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lou Malnati's — FedEx Perishable Weather Alert</title>
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 <style>
 /* ── Lou Malnati's Brand ─────────────────────────────────
    Tomato Red   #da2f3a   Alerts / critical accents only
@@ -135,11 +134,10 @@ td.center{text-align:center}
 .nodata{text-align:center;padding:22px;color:#aaa;font-size:0.85rem}
 .disclaimer{font-size:0.67rem;color:#a09090;padding:6px 24px 20px;line-height:1.6}
 @media(max-width:600px){.pane{padding:10px 12px 20px}.kpi .num{font-size:1.4rem}.lm-wordmark{font-size:1.6rem!important}}
-.lm-logo{display:flex;flex-direction:column;align-items:flex-start;line-height:1;margin-bottom:4px}
-.lm-wordmark{font-family:'Dancing Script',cursive;font-size:2.4rem;font-weight:700;color:#fff;line-height:1;letter-spacing:-.01em}
-.lm-pizzeria{font-size:0.58rem;font-weight:900;letter-spacing:.22em;text-transform:uppercase;color:#fff;background:#da2f3a;display:inline-block;padding:2px 7px;border-radius:2px;margin-top:1px}
-[data-theme="dark"] .lm-wordmark{color:#f5e8d8}
-[data-theme="dark"] .lm-pizzeria{background:#b02030}
+.hdr-logo-wrap{background:#fff8ec;padding:10px 20px;display:flex;flex-direction:column;justify-content:center;border-right:3px solid #da2f3a}
+.hdr-logo-wrap img{height:56px;width:auto;display:block}
+.hdr-brand{padding:10px 20px;display:flex;flex-direction:column;justify-content:center}
+[data-theme="dark"] .hdr-logo-wrap{background:#f0e4d0}
 
 /* ── Dark Mode ───────────────────────────────────────── */
 [data-theme="dark"] body{background:#181418;color:#ede0d4}
@@ -195,12 +193,12 @@ td.center{text-align:center}
 <body>
 
 <header>
+  <div class="hdr-logo-wrap">
+    <img src="logo.png" alt="Lou Malnati's Pizzeria">
+  </div>
   <div class="hdr-brand">
-    <div class="lm-logo">
-      <div class="lm-wordmark">Lou Malnati's</div>
-      <div class="lm-pizzeria">Pizzeria</div>
-    </div>
-    <div class="sub">FedEx Perishable Shipping Alert &nbsp;·&nbsp; Chicago-origin routes &nbsp;·&nbsp; Live NOAA data</div>
+    <div style="font-size:0.95rem;font-weight:700;color:#fff;letter-spacing:.01em">FedEx Perishable Shipping Alert</div>
+    <div class="sub">Chicago-origin routes &nbsp;·&nbsp; Express &amp; Ground &nbsp;·&nbsp; Live NOAA data</div>
   </div>
   <div class="hdr-right">
     <div class="last-upd" id="lastUpdated">Loading...</div>
