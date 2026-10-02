@@ -37,157 +37,198 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lou Malnati's — FedEx Perishable Weather Alert</title>
 <style>
-/* ── Lou Malnati's Brand ─────────────────────────────────
-   Tomato Red   #da2f3a   Alerts / critical accents only
-   Brick Red    #902030   Alert badges
-   Mozzarella   #fff8ec   Background cream
-   Buttercrust  #ffd495   Active / highlight accent
-   Seasoned Blk #322931   Header / primary UI chrome
+/* ── Lou Malnati's Brand Palette ─────────────────────────
+   Tomato Red   #da2f3a   Primary brand, alerts, CTAs
+   Brick Red    #902030   Authority — section headers, tables
+   Mozzarella   #fff8ec   Warmth — page background, logo panel
+   Buttercrust  #ffd495   Highlight — active tabs, accents, KPI borders
+   Seasoned Blk #322931   Structure — header, tab bar, body text
    ──────────────────────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#fff8ec;color:#322931;min-height:100vh;transition:background .2s,color .2s}
-a{color:#7a3540}
-header{background:#322931;color:#fff;padding:0;display:flex;align-items:stretch;justify-content:space-between;flex-wrap:wrap;border-bottom:3px solid #da2f3a}
-.hdr-brand{padding:12px 24px;display:flex;flex-direction:column;justify-content:center}
-header h1{font-size:1.25rem;font-weight:700;letter-spacing:.01em}
-header .sub{font-size:0.71rem;opacity:.75;margin-top:3px;font-weight:400}
+body{font-family:Arial,sans-serif;background:#fff8ec;color:#322931;min-height:100vh;transition:background .25s,color .25s}
+a{color:#da2f3a}
+/* Header: Seasoned Black chrome, Tomato Red accent border */
+header{background:#322931;color:#fff;padding:0;display:flex;align-items:stretch;justify-content:space-between;flex-wrap:wrap;border-bottom:4px solid #da2f3a}
+.hdr-brand{padding:10px 20px;display:flex;flex-direction:column;justify-content:center}
+header .sub{font-size:0.71rem;opacity:.7;margin-top:3px;font-weight:400}
 .hdr-right{text-align:right;padding:10px 20px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:5px}
-.last-upd{font-size:0.71rem;opacity:.75}
-.dark-toggle{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:16px;padding:4px 12px;font-size:0.72rem;cursor:pointer;font-weight:600;letter-spacing:.02em;white-space:nowrap}
+.last-upd{font-size:0.71rem;opacity:.72}
+/* Logo panel: Mozzarella White so logo sits on its natural background */
+.hdr-logo-wrap{background:#fff8ec;padding:10px 20px;display:flex;flex-direction:column;justify-content:center;border-right:4px solid #da2f3a}
+.hdr-logo-wrap img{height:56px;width:auto;display:block}
+.dark-toggle{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:16px;padding:4px 12px;font-size:0.72rem;cursor:pointer;font-weight:600;letter-spacing:.02em;white-space:nowrap}
 .dark-toggle:hover{background:rgba(255,255,255,.22)}
-.origin-bar{background:#4a3f48;color:#e8ddd5;padding:6px 24px;font-size:0.77rem;font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.origin-bar span{opacity:.82;font-weight:400}
+/* Origin bar: Brick Red — authority stripe between header and tabs */
+.origin-bar{background:#902030;color:#ffd495;padding:6px 24px;font-size:0.77rem;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.origin-bar span{color:#fff;font-weight:400;opacity:.9}
+/* Tab bar: deep Seasoned Black so Buttercrust active tab pops */
+.tab-bar{background:#322931;display:flex;overflow-x:auto;padding:0 20px}
+.tab{padding:11px 16px;color:rgba(255,255,255,.48);font-size:0.79rem;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:color .15s}
+.tab.active{color:#ffd495;border-bottom-color:#ffd495}
+.tab:hover{color:rgba(255,255,255,.88)}
 .btn{display:inline-block;padding:6px 14px;border-radius:4px;font-size:0.78rem;font-weight:700;cursor:pointer;border:none;white-space:nowrap}
 .btn-purple{background:#da2f3a;color:#fff}.btn-purple:hover{background:#b82530}
-.btn-orange{background:#5a4858;color:#fff}.btn-orange:hover{background:#3e3240}
+.btn-orange{background:#902030;color:#fff}.btn-orange:hover{background:#6b1520}
 .btn-green{background:#107C41;color:#fff}.btn-green:hover{background:#0d6435}
 .btn-sm{padding:4px 10px;font-size:0.72rem}
 .btn-ghost{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3)}.btn-ghost:hover{background:rgba(255,255,255,.24)}
-.tab-bar{background:#201c20;display:flex;overflow-x:auto;padding:0 20px}
-.tab{padding:11px 16px;color:rgba(255,255,255,.5);font-size:0.79rem;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:color .15s}
-.tab.active{color:#fff;border-bottom-color:#ffd495}
-.tab:hover{color:rgba(255,255,255,.88)}
 .pane{display:none;padding:16px 24px 30px}
 .pane.active{display:block}
+/* KPI cards: white on Mozzarella bg, Buttercrust bottom border accent */
 .kpi-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-.kpi{flex:1;min-width:110px;background:#fff;border-radius:8px;padding:12px 10px;box-shadow:0 1px 4px rgba(50,41,49,.10);text-align:center;border-bottom:3px solid #f0e8da}
-.kpi .num{font-size:1.8rem;font-weight:700;color:#322931}
-.kpi .lbl{font-size:0.64rem;color:#777;text-transform:uppercase;letter-spacing:.4px;margin-top:2px;line-height:1.3}
-.kpi.red .num{color:#C00000}.kpi.orange .num{color:#7a3540}.kpi.gold .num{color:#a0720d}
-.sec-hdr{font-size:0.8rem;font-weight:700;color:#fff;background:#4a3f48;padding:8px 14px;border-radius:6px 6px 0 0;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-left:4px solid #da2f3a}
+.kpi{flex:1;min-width:110px;background:#fff;border-radius:8px;padding:12px 10px;box-shadow:0 1px 4px rgba(50,41,49,.10);text-align:center;border-bottom:3px solid #ffd495}
+.kpi .num{font-size:1.8rem;font-weight:700;color:#da2f3a}
+.kpi .lbl{font-size:0.64rem;color:#7a6a70;text-transform:uppercase;letter-spacing:.4px;margin-top:2px;line-height:1.3}
+.kpi.red .num{color:#C00000}.kpi.orange .num{color:#902030}.kpi.gold .num{color:#a0720d}
+/* Section headers: Brick Red bg, Buttercrust Yellow left stripe */
+.sec-hdr{font-size:0.8rem;font-weight:700;color:#fff;background:#902030;padding:8px 14px;border-radius:6px 6px 0 0;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-left:4px solid #ffd495}
 .sec-body{background:#fff;border-radius:0 0 6px 6px;box-shadow:0 1px 4px rgba(50,41,49,.08);overflow:hidden;margin-bottom:14px}
-.alert-card{border-left:5px solid #ddd;background:#fff;border-radius:6px;margin-bottom:7px;overflow:hidden;box-shadow:0 1px 3px rgba(50,41,49,.07)}
+/* Alert cards: left border colored by alert severity */
+.alert-card{border-left:5px solid #ffd495;background:#fff;border-radius:6px;margin-bottom:7px;overflow:hidden;box-shadow:0 1px 3px rgba(50,41,49,.07)}
 .ac-hdr{display:flex;align-items:flex-start;justify-content:space-between;padding:11px 14px 8px;gap:10px;flex-wrap:wrap;cursor:pointer}
 .ac-hdr:hover{background:#fdf5ea}
-.ac-title{font-size:0.88rem;font-weight:700}
-.ac-meta{font-size:0.7rem;color:#777;margin-top:2px}
-.ac-body{padding:0 14px 12px;font-size:0.78rem;color:#555;line-height:1.65;display:none}
+.ac-title{font-size:0.88rem;font-weight:700;color:#322931}
+.ac-meta{font-size:0.7rem;color:#7a6a70;margin-top:2px}
+.ac-body{padding:0 14px 12px;font-size:0.78rem;color:#5a4a50;line-height:1.65;display:none}
 .ac-body.open{display:block}
 .ac-field{margin-bottom:4px}
 .chevron{transition:transform .2s;display:inline-block;font-size:0.68rem}
 .chevron.open{transform:rotate(180deg)}
+/* Badges */
 .badge{display:inline-block;padding:3px 9px;border-radius:10px;font-size:0.67rem;font-weight:700;white-space:nowrap;text-transform:uppercase}
-.b-extreme{background:#C00000;color:#fff}.b-high{background:#902030;color:#fff}
-.b-modhi{background:#ffd495;color:#322931}.b-low{background:#e4ddd8;color:#655a5a}
-.b-delayed{background:#902030;color:#fff}.b-impacted{background:#ffd495;color:#322931}
-.b-suspended{background:#C00000;color:#fff}.b-ok{background:#107C41;color:#fff}
-.b-enhanced{background:#da2f3a;color:#fff}.b-secondary{background:#7CB518;color:#fff}
+.b-extreme{background:#C00000;color:#fff}
+.b-high{background:#902030;color:#fff}
+.b-modhi{background:#ffd495;color:#322931}
+.b-low{background:#e4ddd8;color:#655a5a}
+.b-delayed{background:#902030;color:#fff}
+.b-impacted{background:#ffd495;color:#322931}
+.b-suspended{background:#C00000;color:#fff}
+.b-ok{background:#107C41;color:#fff}
+.b-enhanced{background:#da2f3a;color:#fff}
+.b-secondary{background:#7CB518;color:#fff}
 .b-slight{background:#a0720d;color:#fff}
-.b-peri-crit{background:#C00000;color:#fff}.b-peri-high{background:#902030;color:#fff}
-.b-peri-mod{background:#ffd495;color:#322931}.b-peri-low{background:#107C41;color:#fff}
+.b-peri-crit{background:#C00000;color:#fff}
+.b-peri-high{background:#902030;color:#fff}
+.b-peri-mod{background:#ffd495;color:#322931}
+.b-peri-low{background:#107C41;color:#fff}
+/* Tables: Brick Red headers */
 .tbl-wrap{overflow-x:auto}
 tr.fdx-suspended td{background:#fff0f0!important;border-left:4px solid #C00000}
-tr.fdx-delayed td{background:#fdf0f1!important;border-left:4px solid #da2f3a}
+tr.fdx-delayed td{background:#fef5f5!important;border-left:4px solid #da2f3a}
 tr.fdx-impacted td{background:#fffbf0!important;border-left:4px solid #ffd495}
 .fdx-card{border:1px solid #e8ddd8;border-radius:6px;padding:12px 16px;margin-bottom:10px;background:#fff;border-left-width:5px}
 .fdx-card.fdx-card-suspended{border-left-color:#C00000;background:#fff8f8}
 .fdx-card.fdx-card-delayed{border-left-color:#da2f3a;background:#fff8f8}
 .fdx-card.fdx-card-impacted{border-left-color:#ffd495;background:#fffdf5}
 table{width:100%;border-collapse:collapse;font-size:0.77rem}
-thead tr{background:#4a3f48;color:#fff}
+thead tr{background:#902030;color:#fff}
 th{padding:8px 9px;text-align:left;font-size:0.7rem;font-weight:700;white-space:nowrap;cursor:pointer;user-select:none}
-th:hover{background:#372f35}
+th:hover{background:#6b1520}
 td{padding:6px 9px;border-bottom:1px solid #f0e8de;vertical-align:middle}
 tr.even{background:#fdf8f2}
-tr:hover td{background:#fdf0e8}
+tr:hover td{background:#fdf0e4}
 td.center{text-align:center}
 .td-note{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ctrl-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:9px 12px;background:#fdf5ea;border-bottom:1px solid #e8ddd5}
-.ctrl-bar input,.ctrl-bar select{padding:5px 9px;border:1px solid #d8cdc5;border-radius:4px;font-size:0.77rem;background:#fff}
-.ctrl-bar label{font-size:0.73rem;color:#655a5a;font-weight:700}
-.state-grid{background:#fdf5ea;border-radius:0 0 6px 6px;overflow:hidden;text-align:center}
+/* Control bar: Mozzarella tint with Buttercrust border */
+.ctrl-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:9px 12px;background:#fff8ec;border-bottom:2px solid #ffd495}
+.ctrl-bar input,.ctrl-bar select{padding:5px 9px;border:1px solid #d8cdc5;border-radius:4px;font-size:0.77rem;background:#fff;color:#322931}
+.ctrl-bar label{font-size:0.73rem;color:#902030;font-weight:700}
+.state-grid{background:#fff8ec;border-radius:0 0 6px 6px;overflow:hidden;text-align:center}
 .sc{border-radius:5px;padding:8px 4px;text-align:center;font-size:0.72rem;font-weight:700;cursor:default}
 .sc .ab{font-size:0.92rem}.sc .si{font-size:0.58rem;margin-top:2px;opacity:.85;font-weight:400;line-height:1.3}
 .sc.extreme{background:#C00000;color:#fff}.sc.high{background:#902030;color:#fff}
 .sc.modhi{background:#ffd495;color:#322931}.sc.none{background:#e4ddd8;color:#aaa}
+/* Chart: Mozzarella White surface */
 .bar-wrap{padding:14px;background:#fff;border-radius:0 0 6px 6px}
 .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:0.75rem}
 .bar-lbl{width:120px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
 .bar-bg{flex:1;background:#f0e8de;border-radius:3px;height:20px;overflow:hidden}
 .bar-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:6px;font-size:0.68rem;font-weight:700;color:#fff;min-width:36px}
-.fedex-banner{background:#4a3f48;color:#e8ddd5;border-radius:6px;padding:11px 14px;margin-bottom:10px;font-size:0.8rem;display:flex;align-items:flex-start;gap:10px}
-.fedex-banner a{color:#ffd495}
-.perishable-note{background:#fdf5ee;border:1px solid #c06060;border-radius:6px;padding:10px 14px;font-size:0.78rem;margin-bottom:10px;color:#5a2020}
-.spinner{width:26px;height:26px;border:3px solid #f0e8de;border-top:3px solid #da2f3a;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
+/* FedEx banner: Brick Red with Buttercrust link */
+.fedex-banner{background:#902030;color:#fff;border-radius:6px;padding:11px 14px;margin-bottom:10px;font-size:0.8rem;display:flex;align-items:flex-start;gap:10px}
+.fedex-banner a{color:#ffd495;font-weight:700}
+/* Perishable note: Tomato Red border on Mozzarella tint */
+.perishable-note{background:#fff0ee;border:2px solid #da2f3a;border-radius:6px;padding:10px 14px;font-size:0.78rem;margin-bottom:10px;color:#6b1520}
+.spinner{width:26px;height:26px;border:3px solid #ffd495;border-top:3px solid #da2f3a;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading{text-align:center;padding:28px;color:#888;font-size:0.85rem}
-.nodata{text-align:center;padding:22px;color:#aaa;font-size:0.85rem}
+.loading{text-align:center;padding:28px;color:#902030;font-size:0.85rem}
+.nodata{text-align:center;padding:22px;color:#a09090;font-size:0.85rem}
 .disclaimer{font-size:0.67rem;color:#a09090;padding:6px 24px 20px;line-height:1.6}
-@media(max-width:600px){.pane{padding:10px 12px 20px}.kpi .num{font-size:1.4rem}.lm-wordmark{font-size:1.6rem!important}}
-.hdr-logo-wrap{background:#fff8ec;padding:10px 20px;display:flex;flex-direction:column;justify-content:center;border-right:3px solid #da2f3a}
-.hdr-logo-wrap img{height:56px;width:auto;display:block}
-.hdr-brand{padding:10px 20px;display:flex;flex-direction:column;justify-content:center}
-[data-theme="dark"] .hdr-logo-wrap{background:#f0e4d0}
+@media(max-width:600px){.pane{padding:10px 12px 20px}.kpi .num{font-size:1.4rem}}
 
-/* ── Dark Mode ───────────────────────────────────────── */
-[data-theme="dark"] body{background:#181418;color:#ede0d4}
+/* ── Dark Mode ────────────────────────────────────────────
+   Tomato Red  → alert badges, header border, spinner
+   Brick Red   → section/table headers (darkened), origin bar
+   Mozzarella  → primary warm text, logo panel (slightly dimmed)
+   Buttercrust → links, active tab, sec-hdr accent, KPI border
+   Seasoned Blk → deep bg, card surfaces
+   ──────────────────────────────────────────────────── */
+[data-theme="dark"] body{background:#181418;color:#f0e4d4}
 [data-theme="dark"] a{color:#ffd495}
-[data-theme="dark"] header{background:#0e0c0e;border-bottom-color:#da2f3a}
-[data-theme="dark"] .origin-bar{background:#1e1a1e;color:#c0b0a8;border-bottom:1px solid #302830}
-[data-theme="dark"] .tab-bar{background:#0a080a}
+/* Header: deepest Seasoned Black, Tomato Red border */
+[data-theme="dark"] header{background:#100e10;border-bottom-color:#da2f3a}
+[data-theme="dark"] .hdr-logo-wrap{background:#ede0ce;border-right-color:#da2f3a}
+/* Origin bar: dark Brick Red with Buttercrust text */
+[data-theme="dark"] .origin-bar{background:#5a1520;color:#ffd495}
+[data-theme="dark"] .origin-bar span{color:#f0c8c0;opacity:1}
+/* Tab bar: deepest Seasoned Black */
+[data-theme="dark"] .tab-bar{background:#0e0c0e}
+[data-theme="dark"] .tab.active{color:#ffd495;border-bottom-color:#ffd495}
 [data-theme="dark"] .pane{background:transparent}
-[data-theme="dark"] .kpi{background:#242028;border-bottom-color:#302830;box-shadow:none}
-[data-theme="dark"] .kpi .num{color:#ede0d4}
+/* KPI cards: dark Seasoned Black surface, Buttercrust border */
+[data-theme="dark"] .kpi{background:#242028;border-bottom-color:#ffd495;box-shadow:none}
+[data-theme="dark"] .kpi .num{color:#ffd495}
 [data-theme="dark"] .kpi.red .num{color:#e05060}
 [data-theme="dark"] .kpi.orange .num{color:#d08090}
 [data-theme="dark"] .kpi.gold .num{color:#d4a040}
-[data-theme="dark"] .kpi .lbl{color:#8a7a80}
-[data-theme="dark"] .sec-hdr{background:#242028;color:#ede0d4;border-left-color:#da2f3a}
-[data-theme="dark"] .sec-body{background:#242028;box-shadow:none}
-[data-theme="dark"] .alert-card{background:#242028;border-left-color:#3a3040;box-shadow:none}
-[data-theme="dark"] .ac-hdr:hover{background:#2e2830}
-[data-theme="dark"] .ac-title{color:#ede0d4}
-[data-theme="dark"] .ac-meta{color:#8a7a80}
+[data-theme="dark"] .kpi .lbl{color:#8a7880}
+/* Section headers: dark Brick Red, Buttercrust accent stripe */
+[data-theme="dark"] .sec-hdr{background:#4a1018;color:#f0e4d4;border-left-color:#ffd495}
+[data-theme="dark"] .sec-body{background:#201c22;box-shadow:none}
+/* Alert cards */
+[data-theme="dark"] .alert-card{background:#242028;border-left-color:#ffd495;box-shadow:none}
+[data-theme="dark"] .ac-hdr:hover{background:#2e2030}
+[data-theme="dark"] .ac-title{color:#f0e4d4}
+[data-theme="dark"] .ac-meta{color:#8a7880}
 [data-theme="dark"] .ac-body{color:#b0a0a8}
+/* Badges */
 [data-theme="dark"] .b-low{background:#302830;color:#a09098}
-[data-theme="dark"] .b-modhi{background:#6a5800;color:#ffd495}
-[data-theme="dark"] .b-impacted{background:#6a5800;color:#ffd495}
-[data-theme="dark"] .fdx-card{background:#242028;border-color:#302830}
-[data-theme="dark"] .fdx-card.fdx-card-delayed{background:#2a1820}
-[data-theme="dark"] .fdx-card.fdx-card-suspended{background:#2a1820}
-[data-theme="dark"] .fdx-card.fdx-card-impacted{background:#242010}
-[data-theme="dark"] table{color:#ede0d4}
-[data-theme="dark"] thead tr{background:#2e2830}
-[data-theme="dark"] th:hover{background:#3a3040}
-[data-theme="dark"] td{border-bottom-color:#302830}
+[data-theme="dark"] .b-modhi{background:#6a5000;color:#ffd495}
+[data-theme="dark"] .b-impacted{background:#6a5000;color:#ffd495}
+/* FedEx cards */
+[data-theme="dark"] .fdx-card{background:#201c22;border-color:#302830}
+[data-theme="dark"] .fdx-card.fdx-card-delayed{background:#2e1018}
+[data-theme="dark"] .fdx-card.fdx-card-suspended{background:#2e1018}
+[data-theme="dark"] .fdx-card.fdx-card-impacted{background:#221c08}
+/* Tables: dark Brick Red headers */
+[data-theme="dark"] table{color:#f0e4d4}
+[data-theme="dark"] thead tr{background:#4a1018}
+[data-theme="dark"] th:hover{background:#6b1520}
+[data-theme="dark"] td{border-bottom-color:#2e2830}
 [data-theme="dark"] tr.even{background:#201c22}
-[data-theme="dark"] tr:hover td{background:#2a2430}
-[data-theme="dark"] tr.fdx-delayed td{background:#2a1820!important}
-[data-theme="dark"] tr.fdx-impacted td{background:#242010!important}
-[data-theme="dark"] .ctrl-bar{background:#201c22;border-bottom-color:#302830}
-[data-theme="dark"] .ctrl-bar input,[data-theme="dark"] .ctrl-bar select{background:#181418;border-color:#302830;color:#ede0d4}
-[data-theme="dark"] .ctrl-bar label{color:#8a7a80}
-[data-theme="dark"] .state-grid{background:#201c22}
+[data-theme="dark"] tr:hover td{background:#2e2030}
+[data-theme="dark"] tr.fdx-delayed td{background:#2e1018!important}
+[data-theme="dark"] tr.fdx-impacted td{background:#221c08!important}
+/* Control bar: dark Seasoned Black, Buttercrust border */
+[data-theme="dark"] .ctrl-bar{background:#1e1a20;border-bottom-color:#ffd495}
+[data-theme="dark"] .ctrl-bar input,[data-theme="dark"] .ctrl-bar select{background:#181418;border-color:#3a3040;color:#f0e4d4}
+[data-theme="dark"] .ctrl-bar label{color:#ffd495}
+/* State grid */
+[data-theme="dark"] .state-grid{background:#1e1a20}
 [data-theme="dark"] .sc.none{background:#2e2830;color:#6a6068}
+/* Chart */
 [data-theme="dark"] .bar-wrap{background:#242028}
 [data-theme="dark"] .bar-bg{background:#302830}
-[data-theme="dark"] .fedex-banner{background:#2e2830;color:#c0b0a8}
-[data-theme="dark"] .perishable-note{background:#261820;border-color:#a04040;color:#d4a0a0}
-[data-theme="dark"] .spinner{border-color:#302830;border-top-color:#da2f3a}
-[data-theme="dark"] .loading{color:#6a6068}
+/* FedEx banner: dark Brick Red with Buttercrust text */
+[data-theme="dark"] .fedex-banner{background:#4a1018;color:#ffd495}
+[data-theme="dark"] .fedex-banner a{color:#ffd495}
+/* Perishable note: dark Tomato Red tint */
+[data-theme="dark"] .perishable-note{background:#2e1018;border-color:#da2f3a;color:#f0c0c0}
+/* Spinner: Buttercrust track, Tomato Red fill */
+[data-theme="dark"] .spinner{border-color:#4a1018;border-top-color:#da2f3a}
+[data-theme="dark"] .loading{color:#ffd495}
 [data-theme="dark"] .nodata{color:#6a6068}
 [data-theme="dark"] .disclaimer{color:#6a5a60}
-[data-theme="dark"] .ac-hdr:hover{background:#2e2830}
 </style>
 </head>
 <body>
