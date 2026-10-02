@@ -163,36 +163,39 @@ td.center{text-align:center}
    Buttercrust → links, active tab, sec-hdr accent, KPI border
    Seasoned Blk → deep bg, card surfaces
    ──────────────────────────────────────────────────── */
-[data-theme="dark"] body{background:#181418;color:#f0e4d4}
+[data-theme="dark"] body{background:#181418;color:#ede4d8}
 [data-theme="dark"] a{color:#ffd495}
-/* Header: deepest Seasoned Black, Tomato Red border */
+/* Header */
 [data-theme="dark"] header{background:#100e10;border-bottom-color:#da2f3a}
 [data-theme="dark"] .hdr-logo-wrap{background:#ede0ce;border-right-color:#da2f3a}
-/* Origin bar: dark Brick Red with Buttercrust text */
+/* Origin bar */
 [data-theme="dark"] .origin-bar{background:#5a1520;color:#ffd495}
-[data-theme="dark"] .origin-bar span{color:#f0c8c0;opacity:1}
-/* Tab bar: deepest Seasoned Black */
+[data-theme="dark"] .origin-bar span{color:#f4d0c8;opacity:1}
+/* Tab bar — inactive tabs brighter so they're legible */
 [data-theme="dark"] .tab-bar{background:#0e0c0e}
+[data-theme="dark"] .tab{color:rgba(255,255,255,.68)}
+[data-theme="dark"] .tab:hover{color:rgba(255,255,255,.92)}
 [data-theme="dark"] .tab.active{color:#ffd495;border-bottom-color:#ffd495}
 [data-theme="dark"] .pane{background:transparent}
-/* KPI cards: dark Seasoned Black surface, Buttercrust border */
+/* KPI cards */
 [data-theme="dark"] .kpi{background:#242028;border-bottom-color:#ffd495;box-shadow:none}
 [data-theme="dark"] .kpi .num{color:#ffd495}
-[data-theme="dark"] .kpi.red .num{color:#e05060}
-[data-theme="dark"] .kpi.orange .num{color:#d08090}
-[data-theme="dark"] .kpi.gold .num{color:#d4a040}
-[data-theme="dark"] .kpi .lbl{color:#8a7880}
-/* Section headers: dark Brick Red, Buttercrust accent stripe */
-[data-theme="dark"] .sec-hdr{background:#4a1018;color:#f0e4d4;border-left-color:#ffd495}
+[data-theme="dark"] .kpi.red .num{color:#e86070}
+[data-theme="dark"] .kpi.orange .num{color:#e0a0b0}
+[data-theme="dark"] .kpi.gold .num{color:#e0b050}
+[data-theme="dark"] .kpi .lbl{color:#c0b0b8}
+/* Section headers */
+[data-theme="dark"] .sec-hdr{background:#4a1018;color:#ede4d8;border-left-color:#ffd495}
 [data-theme="dark"] .sec-body{background:#201c22;box-shadow:none}
 /* Alert cards */
 [data-theme="dark"] .alert-card{background:#242028;border-left-color:#ffd495;box-shadow:none}
 [data-theme="dark"] .ac-hdr:hover{background:#2e2030}
-[data-theme="dark"] .ac-title{color:#f0e4d4}
-[data-theme="dark"] .ac-meta{color:#8a7880}
-[data-theme="dark"] .ac-body{color:#b0a0a8}
+[data-theme="dark"] .ac-title{color:#ede4d8}
+[data-theme="dark"] .ac-meta{color:#c0b0b8}
+[data-theme="dark"] .ac-body{color:#d4c8cc}
+[data-theme="dark"] .ac-field{color:#d4c8cc}
 /* Badges */
-[data-theme="dark"] .b-low{background:#302830;color:#a09098}
+[data-theme="dark"] .b-low{background:#362e38;color:#c8b8c4}
 [data-theme="dark"] .b-modhi{background:#6a5000;color:#ffd495}
 [data-theme="dark"] .b-impacted{background:#6a5000;color:#ffd495}
 /* FedEx cards */
@@ -200,35 +203,41 @@ td.center{text-align:center}
 [data-theme="dark"] .fdx-card.fdx-card-delayed{background:#2e1018}
 [data-theme="dark"] .fdx-card.fdx-card-suspended{background:#2e1018}
 [data-theme="dark"] .fdx-card.fdx-card-impacted{background:#221c08}
-/* Tables: dark Brick Red headers */
-[data-theme="dark"] table{color:#f0e4d4}
+/* Tables — all cell text bright, secondary text legible */
+[data-theme="dark"] table{color:#ede4d8}
 [data-theme="dark"] thead tr{background:#4a1018}
+[data-theme="dark"] th{color:#fff}
 [data-theme="dark"] th:hover{background:#6b1520}
-[data-theme="dark"] td{border-bottom-color:#2e2830}
+[data-theme="dark"] td{border-bottom-color:#2e2830;color:#ede4d8}
 [data-theme="dark"] tr.even{background:#201c22}
 [data-theme="dark"] tr:hover td{background:#2e2030}
 [data-theme="dark"] tr.fdx-delayed td{background:#2e1018!important}
 [data-theme="dark"] tr.fdx-impacted td{background:#221c08!important}
-/* Control bar: dark Seasoned Black, Buttercrust border */
+/* Control bar */
 [data-theme="dark"] .ctrl-bar{background:#1e1a20;border-bottom-color:#ffd495}
-[data-theme="dark"] .ctrl-bar input,[data-theme="dark"] .ctrl-bar select{background:#181418;border-color:#3a3040;color:#f0e4d4}
+[data-theme="dark"] .ctrl-bar input,[data-theme="dark"] .ctrl-bar select{background:#181418;border-color:#3a3040;color:#ede4d8}
 [data-theme="dark"] .ctrl-bar label{color:#ffd495}
 /* State grid */
 [data-theme="dark"] .state-grid{background:#1e1a20}
-[data-theme="dark"] .sc.none{background:#2e2830;color:#6a6068}
+[data-theme="dark"] .sc.none{background:#2e2830;color:#9a8a98}
 /* Chart */
 [data-theme="dark"] .bar-wrap{background:#242028}
 [data-theme="dark"] .bar-bg{background:#302830}
-/* FedEx banner: dark Brick Red with Buttercrust text */
+[data-theme="dark"] .bar-row{color:#ede4d8}
+[data-theme="dark"] .bar-lbl{color:#ede4d8}
+/* FedEx banner */
 [data-theme="dark"] .fedex-banner{background:#4a1018;color:#ffd495}
 [data-theme="dark"] .fedex-banner a{color:#ffd495}
-/* Perishable note: dark Tomato Red tint */
-[data-theme="dark"] .perishable-note{background:#2e1018;border-color:#da2f3a;color:#f0c0c0}
-/* Spinner: Buttercrust track, Tomato Red fill */
+/* Perishable note */
+[data-theme="dark"] .perishable-note{background:#2e1018;border-color:#da2f3a;color:#f4c8c8}
+/* Spinner */
 [data-theme="dark"] .spinner{border-color:#4a1018;border-top-color:#da2f3a}
-[data-theme="dark"] .loading{color:#ffd495}
-[data-theme="dark"] .nodata{color:#6a6068}
-[data-theme="dark"] .disclaimer{color:#6a5a60}
+[data-theme="dark"] .loading{color:#d0c0c8}
+[data-theme="dark"] .nodata{color:#9a8a98}
+[data-theme="dark"] .disclaimer{color:#9a8a98}
+/* Override inline gray text from light-mode styles */
+[data-theme="dark"] .ac-body *{color:inherit}
+[data-theme="dark"] .sec-body p,[data-theme="dark"] .sec-body div,[data-theme="dark"] .sec-body span{color:inherit}
 </style>
 </head>
 <body>
