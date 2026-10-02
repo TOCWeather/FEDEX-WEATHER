@@ -481,27 +481,35 @@ function showTab(t){
 }
 
 // ═══ ZIP TABLE ══════════════════════════════════════════
-let zipSort={col:'pct',dir:-1}, filteredZips=[];
+let zipSort={col:'pct',dir:-1}, filteredZips=[], zipPage=0;
+const ZIP_PAGE_SIZE=200;
 const COL={zip:0,city:1,state:2,abbr:3,level:4,ground:6,express:7,start:8,end:9,pct:10,days:11};
+let _lastHazardKey='';
+let _cachedUS=null; // TopoJSON cache
+let _zipDebounceTimer=null;
 
 function periFromRow(r){if((r[5]||'').toLowerCase().indexOf('red flag')>=0)return 'LOW';return periOfAbbr(r[3]);}
 function gDays(r){return (TRANSIT[r[3]]||{}).chiGround||'—';}
 function eDays(r){return (TRANSIT[r[3]]||{}).chiExpress||'—';}
 
-function renderZipTable(data){
+function renderZipTable(data, resetPage){
   filteredZips=data;
-  document.getElementById('zip-count').textContent=`Showing ${data.length} of ${window._totalZipCount||data.length} ZIPs`;
+  if(resetPage) zipPage=0;
+  const total=data.length;
+  const totalPages=Math.max(1,Math.ceil(total/ZIP_PAGE_SIZE));
+  if(zipPage>=totalPages) zipPage=totalPages-1;
+  const start=zipPage*ZIP_PAGE_SIZE;
+  const pageData=data.slice(start, start+ZIP_PAGE_SIZE);
+  const end=start+pageData.length;
+  document.getElementById('zip-count').textContent=
+    total?`Showing ${start+1}–${end} of ${total} ZIPs`:`0 ZIPs`;
   const tb=document.getElementById('zip-tbody');
-  if(!STATE_DATA.length){tb.innerHTML='<tr><td colspan="11" style="padding:20px;text-align:center;color:#107C41;font-weight:bold;">✅ No active severe weather alerts affecting Chicago-origin routes. ZIP data clears automatically when alerts expire.</td></tr>';return;}
-  if(!data.length){tb.innerHTML='<tr><td colspan="11" class="nodata">No ZIPs match filters.</td></tr>';return;}
-  tb.innerHTML=data.map((r,i)=>{
-    const pr=periFromRow(r);
-    const gSts=r[6]||'';
-    const isImpacted=gSts&&gSts!=='MONITORING';
-    const fdxClass=isImpacted?'fdx-delayed':(i%2?'even':'');
-    const fdxBadge=isImpacted?'<span style="font-size:0.6rem;font-weight:700;color:#E26B0A;margin-left:4px">🚚 FDX</span>':'';
-    return`<tr class="${fdxClass}">
-      <td><strong>${r[0]}</strong>${fdxBadge}</td>
+  if(!STATE_DATA.length){tb.innerHTML='<tr><td colspan="11" style="padding:20px;text-align:center;color:#107C41;font-weight:bold;">✅ No active severe weather alerts affecting Chicago-origin routes.</td></tr>';_renderZipPager(0,1);return;}
+  if(!total){tb.innerHTML='<tr><td colspan="11" class="nodata">No ZIPs match filters.</td></tr>';_renderZipPager(0,1);return;}
+  tb.innerHTML=pageData.map((r,i)=>{
+    const rowClass=(start+i)%2?'even':'';
+    return`<tr class="${rowClass}">
+      <td><strong>${r[0]}</strong></td>
       <td>${r[1]}</td><td>${r[3]}</td>
       <td>${bl(r[4])}</td>
       <td style="font-size:0.7rem;max-width:180px">${r[5]}</td>
@@ -513,49 +521,73 @@ function renderZipTable(data){
       <td class="td-note" title="${r[12]}" style="font-size:0.7rem">${r[12]}</td>
     </tr>`;
   }).join('');
+  _renderZipPager(zipPage, totalPages);
 }
+function _renderZipPager(page, totalPages){
+  let pg=document.getElementById('zip-pager');
+  if(!pg){pg=document.createElement('div');pg.id='zip-pager';pg.style.cssText='display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:0.75rem;border-top:1px solid #f0e8de;background:#fdf5ea';
+  const tbl=document.getElementById('zip-tbody');if(tbl&&tbl.parentNode)tbl.parentNode.parentNode.appendChild(pg);}
+  if(totalPages<=1){pg.style.display='none';return;}
+  pg.style.display='flex';
+  pg.innerHTML=`<button onclick="zipGoPage(${page-1})" ${page===0?'disabled':''} style="padding:3px 10px;border:1px solid #d8cdc5;border-radius:4px;cursor:pointer;font-size:0.72rem;background:#fff">◀ Prev</button><span>Page ${page+1} of ${totalPages}</span><button onclick="zipGoPage(${page+1})" ${page>=totalPages-1?'disabled':''} style="padding:3px 10px;border:1px solid #d8cdc5;border-radius:4px;cursor:pointer;font-size:0.72rem;background:#fff">Next ▶</button>`;
+}
+function zipGoPage(p){zipPage=p;renderZipTable(filteredZips,false);}
 
 function filterZips(){
-  // Only show ZIPs in counties with active NOAA alerts
-  const activeAbbrs = new Set(STATE_DATA.map(s=>s.abbr));  const search=(document.getElementById('zip-search')||{}).value||'';
+  clearTimeout(_zipDebounceTimer);
+  _zipDebounceTimer=setTimeout(_doFilterZips, 220);
+}
+function _doFilterZips(){
+  const activeAbbrs=new Set(STATE_DATA.map(s=>s.abbr));
+  const search=(document.getElementById('zip-search')||{}).value||'';
   const stateF=(document.getElementById('zip-state')||{}).value||'';
-  const svcF=(document.getElementById('zip-svc')||{}).value||'';
-  const periF=(document.getElementById('zip-peri')||{}).value||'';
-const hazardF=(document.getElementById('zip-hazard')||{}).value||'';
+  const hazardF=(document.getElementById('zip-hazard')||{}).value||'';
   const sl=search.toLowerCase();
 
-  if(!activeAbbrs.size){
-    renderZipTable([]);
-    return;
-  }
+  if(!activeAbbrs.size){renderZipTable([],true);return;}
 
-  // Show all ZIPs in affected states
-  let data = ZIP_REF
-    .filter(r => activeAbbrs.has(r[3]))
-    .map(r => {
-      const _sds=STATE_DATA.filter(s=>s.abbr===r[3]);const sd=_sds.length?_sds.reduce((a,b)=>(b.pct||0)>(a.pct||0)?b:a):{};
-      // Expand to full row format: [zip,city,state,abbr,level,weather,ground,express,start,end,pct,days,note]
-      return [r[0],r[1],r[2],r[3],
+  // Pre-build STATE_DATA lookup (O(m) once, not O(n×m) inside map)
+  const stateIdx={};
+  STATE_DATA.forEach(s=>{if(!stateIdx[s.abbr]||(s.pct||0)>(stateIdx[s.abbr].pct||0))stateIdx[s.abbr]=s;});
+
+  let data=ZIP_REF
+    .filter(r=>activeAbbrs.has(r[3]))
+    .map(r=>{
+      const sd=stateIdx[r[3]]||{};
+      return[r[0],r[1],r[2],r[3],
         sd.level||'MODERATE-HIGH',
         sd.weather||'Severe Weather',
         sd.ground||'DELAY POSSIBLE',
         sd.express||'DELAY POSSIBLE',
-        sd.start||'—', (sd.ends_iso&&sd.ends_iso.length>5)?fmtDt(sd.ends_iso):(sd.end||'—'),
-        sd.pct||50, (TRANSIT[r[3]]||{}).chiGround||2,
+        sd.start||'—',(sd.ends_iso&&sd.ends_iso.length>5)?fmtDt(sd.ends_iso):(sd.end||'—'),
+        sd.pct||50,(TRANSIT[r[3]]||{}).chiGround||2,
         sd.note||''
       ];
     });
-  // Update dashboard ZIP Codes Affected count
-  const kz = document.getElementById('k-zip-count');
-  if(kz) kz.textContent = data.length;window._totalZipCount=data.length;const _hsel=document.getElementById('zip-hazard');if(_hsel){const _hcur=_hsel.value;const _htypes=[...new Set(data.map(r=>(r[5].split(' issued')[0]||r[5]).trim()))].filter(Boolean).sort();while(_hsel.options.length>1)_hsel.remove(1);_htypes.forEach(function(h){var o=document.createElement('option');o.value=h;o.text=h;_hsel.add(o);});if(_hcur)_hsel.value=_hcur;}
+
+  const kz=document.getElementById('k-zip-count');
+  if(kz) kz.textContent=data.length;
+  window._totalZipCount=data.length;
+
+  // Only rebuild hazard dropdown when the set of hazard types changes
+  const _hsel=document.getElementById('zip-hazard');
+  if(_hsel){
+    const _htypes=[...new Set(data.map(r=>(r[5].split(' issued')[0]||r[5]).trim()))].filter(Boolean).sort();
+    const _hkey=_htypes.join('|');
+    if(_hkey!==_lastHazardKey){
+      _lastHazardKey=_hkey;
+      const _hcur=_hsel.value;
+      while(_hsel.options.length>1)_hsel.remove(1);
+      _htypes.forEach(h=>{const o=document.createElement('option');o.value=h;o.text=h;_hsel.add(o);});
+      if(_hcur)_hsel.value=_hcur;
+    }
+  }
 
   if(sl) data=data.filter(r=>r[0].includes(sl)||r[1].toLowerCase().includes(sl)||r[2].toLowerCase().includes(sl)||r[3].toLowerCase().includes(sl));
   if(stateF) data=data.filter(r=>r[2]===stateF);
-  if(svcF==='express') data=data.filter(r=>r[7]!=='NORMAL'&&r[7]!=='');
-  if(svcF==='ground')  data=data.filter(r=>r[6]!=='NORMAL'&&r[6]!=='');
-  if(periF){const p=periF.toUpperCase();data=data.filter(r=>periFromRow(r)===p);}if(hazardF){data=data.filter(r=>r[5].indexOf(hazardF)>=0);}
+  if(hazardF) data=data.filter(r=>r[5].indexOf(hazardF)>=0);
   data=sortZipData(data);
-  renderZipTable(data);
+  renderZipTable(data,true);
 }
 
 function sortZipData(data){
@@ -642,9 +674,7 @@ function renderMap(){
   const svg=document.getElementById('_usmap');
   const NS='http://www.w3.org/2000/svg';
   if(typeof d3==='undefined'||typeof topojson==='undefined'){svg.innerHTML='<text x="480" y="300" text-anchor="middle" font-size="16" fill="#666">Loading map libraries…</text>';return;}
-  fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json')
-    .then(r=>r.json())
-    .then(us=>{
+  const _drawWithUS=us=>{
       const feats=topojson.feature(us,us.objects.states).features;
       const proj=d3.geoAlbersUsa().scale(1300).translate([487.5,305]);
       const pg=d3.geoPath().projection(proj);
@@ -679,7 +709,12 @@ function renderMap(){
         }
       });
       svg.appendChild(g);
-    }).catch(()=>{svg.innerHTML='<text x="480" y="300" text-anchor="middle" font-size="14" fill="#999">Map unavailable</text>';});
+  };
+  if(_cachedUS){_drawWithUS(_cachedUS);}
+  else{fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json')
+    .then(r=>r.json())
+    .then(us=>{_cachedUS=us;_drawWithUS(us);})
+    .catch(()=>{svg.innerHTML='<text x="480" y="300" text-anchor="middle" font-size="14" fill="#999">Map unavailable</text>';});}
 }
 function renderChart(){
   // Perishable Risk Score = interruption% × ground transit factor
@@ -976,7 +1011,7 @@ async function init(){
     console.warn('Could not load zips.json:', e.message);
   }
   loadAll();
-  setInterval(loadAll, 5 * 60 * 1000); // auto-refresh every 5 minutes
+  setInterval(loadLiveAlerts, 5 * 60 * 1000); // refresh live NOAA data every 5 min
 }
 init();
 </script>
