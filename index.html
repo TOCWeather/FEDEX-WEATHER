@@ -297,16 +297,6 @@ td.center{text-align:center}
     <div class="loading"><div class="spinner"></div>Fetching live NOAA data…</div>
   </div>
 
-  <div class="sec-hdr">Legend</div>
-  <div class="sec-body">
-    <table>
-      <thead><tr><th>Risk Level</th><th>FedEx Status</th><th>Interrup. Prob.</th><th>Transit from Chicago</th><th>Perishable Risk</th><th>Action</th></tr></thead>
-      <tbody>
-        <tr><td><span class="badge b-high">HIGH</span></td><td><span class="badge b-delayed">DELAY POSSIBLE</span></td><td>70–82%</td><td>1–4 days (Express 1–2 days)</td><td><span class="badge b-peri-crit">CRITICAL</span></td><td>Contact FedEx · Consider hold at facility · Alert customer</td></tr>
-        <tr class="even"><td><span class="badge b-modhi">MODERATE-HIGH</span></td><td><span class="badge b-impacted">DELAY POSSIBLE</span></td><td>48–65%</td><td>1–3 days (Express O/N–1 day)</td><td><span class="badge b-peri-high">HIGH</span></td><td>Monitor FedEx ZIP tool · Proactive customer communication</td></tr>
-      </tbody>
-    </table>
-  </div>
 </div>
 
 <!-- ZIP CODES -->
@@ -866,8 +856,6 @@ async function loadLiveAlerts(){
           ${ch.length?`<div style="margin-top:4px;font-size:0.7rem;color:#C00000;font-weight:700">⚠️ Chicago routes: ${ch.join(', ')}</div>`:''}
         </div>
         <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
-          ${b(g.severity,g.severity==='Extreme'?'b-extreme':'b-high')}
-          ${b('FedEx: '+imp.status,imp.lbl==='HIGH'||imp.lbl==='EXTREME'?'b-delayed':'b-impacted')}
           <span class="chevron" id="ac${i}">▼</span>
         </div>
       </div>
