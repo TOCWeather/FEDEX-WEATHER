@@ -424,17 +424,17 @@ td.center{text-align:center}
 </div>
 
 <!-- FEDEX ALERTS -->
-<div class="pane" id="pane-fedex">
-  <div class="sec-hdr">🚚 FedEx Service Impact — Chicago-Origin Routes</div>
-  <div class="sec-body" style="padding:14px">
-    <div style="background:#fff8e1;border:1px solid #f9a825;border-radius:4px;padding:8px 14px;margin-bottom:14px;font-size:0.78rem;line-height:1.6">
-      ⚠️ <strong>Impact levels are derived from active NOAA weather severity.</strong>
-      Always confirm current shipping status at
-      <a href="https://www.fedex.com/en-us/service-alerts.html" target="_blank" rel="noopener" style="color:#4D148C;font-weight:700">fedex.com/service-alerts ↗</a>
-      before dispatching perishable orders. Call FedEx at <strong>1-800-463-3339</strong> to hold or reroute packages.
-    </div>
-    <div id="fedex-cards"></div>
+<div class="pane" id="pane-fedex" style="padding:0">
+  <div style="background:#902030;color:#ffd495;padding:8px 16px;font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+    <span>🚚 Live FedEx Service Alerts — fedex.com/service-alerts</span>
+    <a href="https://www.fedex.com/en-us/service-alerts.html" target="_blank" rel="noopener" style="color:#fff;font-size:0.72rem;font-weight:400;opacity:.85">Open in new tab ↗</a>
   </div>
+  <iframe
+    src="https://www.fedex.com/en-us/service-alerts.html"
+    style="width:100%;height:calc(100vh - 180px);border:none;display:block;background:#fff"
+    title="FedEx Service Alerts"
+    loading="lazy"
+  ></iframe>
 </div>
 
 <!-- CHART -->
