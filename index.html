@@ -38,41 +38,43 @@
 <title>Lou Malnati's — FedEx Perishable Weather Alert</title>
 <style>
 /* ── Lou Malnati's Brand ─────────────────────────────────
-   Tomato Red   #da2f3a   Primary
-   Brick Red    #902030   Dark accent / headers
+   Tomato Red   #da2f3a   Alerts / critical accents only
+   Brick Red    #902030   Alert badges
    Mozzarella   #fff8ec   Background cream
    Buttercrust  #ffd495   Active / highlight accent
-   Seasoned Blk #322931   Text / tab bar
+   Seasoned Blk #322931   Header / primary UI chrome
    ──────────────────────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#fff8ec;color:#322931;min-height:100vh}
-a{color:#902030}
-header{background:#da2f3a;color:#fff;padding:0;display:flex;align-items:stretch;justify-content:space-between;flex-wrap:wrap}
+body{font-family:Arial,sans-serif;background:#fff8ec;color:#322931;min-height:100vh;transition:background .2s,color .2s}
+a{color:#7a3540}
+header{background:#322931;color:#fff;padding:0;display:flex;align-items:stretch;justify-content:space-between;flex-wrap:wrap;border-bottom:3px solid #da2f3a}
 .hdr-brand{padding:12px 24px;display:flex;flex-direction:column;justify-content:center}
 header h1{font-size:1.25rem;font-weight:700;letter-spacing:.01em}
-header .sub{font-size:0.71rem;opacity:.88;margin-top:3px;font-weight:400}
-.hdr-right{text-align:right;padding:10px 20px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.12)}
-.last-upd{font-size:0.71rem;opacity:.82}
-.origin-bar{background:#902030;color:#fff;padding:7px 24px;font-size:0.78rem;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid #6b1520}
-.origin-bar span{opacity:.88;font-weight:400}
+header .sub{font-size:0.71rem;opacity:.75;margin-top:3px;font-weight:400}
+.hdr-right{text-align:right;padding:10px 20px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:5px}
+.last-upd{font-size:0.71rem;opacity:.75}
+.dark-toggle{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:16px;padding:4px 12px;font-size:0.72rem;cursor:pointer;font-weight:600;letter-spacing:.02em;white-space:nowrap}
+.dark-toggle:hover{background:rgba(255,255,255,.22)}
+.origin-bar{background:#4a3f48;color:#e8ddd5;padding:6px 24px;font-size:0.77rem;font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.origin-bar span{opacity:.82;font-weight:400}
 .btn{display:inline-block;padding:6px 14px;border-radius:4px;font-size:0.78rem;font-weight:700;cursor:pointer;border:none;white-space:nowrap}
 .btn-purple{background:#da2f3a;color:#fff}.btn-purple:hover{background:#b82530}
-.btn-orange{background:#902030;color:#fff}.btn-orange:hover{background:#6b1520}
+.btn-orange{background:#5a4858;color:#fff}.btn-orange:hover{background:#3e3240}
 .btn-green{background:#107C41;color:#fff}.btn-green:hover{background:#0d6435}
 .btn-sm{padding:4px 10px;font-size:0.72rem}
-.btn-ghost{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.4)}.btn-ghost:hover{background:rgba(255,255,255,.28)}
-.tab-bar{background:#322931;display:flex;overflow-x:auto;padding:0 20px}
-.tab{padding:11px 16px;color:rgba(255,255,255,.55);font-size:0.79rem;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:color .15s}
+.btn-ghost{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3)}.btn-ghost:hover{background:rgba(255,255,255,.24)}
+.tab-bar{background:#201c20;display:flex;overflow-x:auto;padding:0 20px}
+.tab{padding:11px 16px;color:rgba(255,255,255,.5);font-size:0.79rem;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:color .15s}
 .tab.active{color:#fff;border-bottom-color:#ffd495}
-.tab:hover{color:rgba(255,255,255,.9)}
+.tab:hover{color:rgba(255,255,255,.88)}
 .pane{display:none;padding:16px 24px 30px}
 .pane.active{display:block}
 .kpi-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
 .kpi{flex:1;min-width:110px;background:#fff;border-radius:8px;padding:12px 10px;box-shadow:0 1px 4px rgba(50,41,49,.10);text-align:center;border-bottom:3px solid #f0e8da}
-.kpi .num{font-size:1.8rem;font-weight:700;color:#da2f3a}
+.kpi .num{font-size:1.8rem;font-weight:700;color:#322931}
 .kpi .lbl{font-size:0.64rem;color:#777;text-transform:uppercase;letter-spacing:.4px;margin-top:2px;line-height:1.3}
-.kpi.red .num{color:#C00000}.kpi.orange .num{color:#902030}.kpi.gold .num{color:#a0720d}
-.sec-hdr{font-size:0.8rem;font-weight:700;color:#fff;background:#da2f3a;padding:8px 14px;border-radius:6px 6px 0 0;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.kpi.red .num{color:#C00000}.kpi.orange .num{color:#7a3540}.kpi.gold .num{color:#a0720d}
+.sec-hdr{font-size:0.8rem;font-weight:700;color:#fff;background:#4a3f48;padding:8px 14px;border-radius:6px 6px 0 0;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-left:4px solid #da2f3a}
 .sec-body{background:#fff;border-radius:0 0 6px 6px;box-shadow:0 1px 4px rgba(50,41,49,.08);overflow:hidden;margin-bottom:14px}
 .alert-card{border-left:5px solid #ddd;background:#fff;border-radius:6px;margin-bottom:7px;overflow:hidden;box-shadow:0 1px 3px rgba(50,41,49,.07)}
 .ac-hdr{display:flex;align-items:flex-start;justify-content:space-between;padding:11px 14px 8px;gap:10px;flex-wrap:wrap;cursor:pointer}
@@ -102,9 +104,9 @@ tr.fdx-impacted td{background:#fffbf0!important;border-left:4px solid #ffd495}
 .fdx-card.fdx-card-delayed{border-left-color:#da2f3a;background:#fff8f8}
 .fdx-card.fdx-card-impacted{border-left-color:#ffd495;background:#fffdf5}
 table{width:100%;border-collapse:collapse;font-size:0.77rem}
-thead tr{background:#902030;color:#fff}
+thead tr{background:#4a3f48;color:#fff}
 th{padding:8px 9px;text-align:left;font-size:0.7rem;font-weight:700;white-space:nowrap;cursor:pointer;user-select:none}
-th:hover{background:#6b1520}
+th:hover{background:#372f35}
 td{padding:6px 9px;border-bottom:1px solid #f0e8de;vertical-align:middle}
 tr.even{background:#fdf8f2}
 tr:hover td{background:#fdf0e8}
@@ -123,15 +125,65 @@ td.center{text-align:center}
 .bar-lbl{width:120px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
 .bar-bg{flex:1;background:#f0e8de;border-radius:3px;height:20px;overflow:hidden}
 .bar-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:6px;font-size:0.68rem;font-weight:700;color:#fff;min-width:36px}
-.fedex-banner{background:#902030;color:#fff;border-radius:6px;padding:11px 14px;margin-bottom:10px;font-size:0.8rem;display:flex;align-items:flex-start;gap:10px}
+.fedex-banner{background:#4a3f48;color:#e8ddd5;border-radius:6px;padding:11px 14px;margin-bottom:10px;font-size:0.8rem;display:flex;align-items:flex-start;gap:10px}
 .fedex-banner a{color:#ffd495}
-.perishable-note{background:#fdf0e8;border:1px solid #da2f3a;border-radius:6px;padding:10px 14px;font-size:0.78rem;margin-bottom:10px;color:#6b1520}
+.perishable-note{background:#fdf5ee;border:1px solid #c06060;border-radius:6px;padding:10px 14px;font-size:0.78rem;margin-bottom:10px;color:#5a2020}
 .spinner{width:26px;height:26px;border:3px solid #f0e8de;border-top:3px solid #da2f3a;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading{text-align:center;padding:28px;color:#888;font-size:0.85rem}
 .nodata{text-align:center;padding:22px;color:#aaa;font-size:0.85rem}
 .disclaimer{font-size:0.67rem;color:#a09090;padding:6px 24px 20px;line-height:1.6}
 @media(max-width:600px){.pane{padding:10px 12px 20px}.kpi .num{font-size:1.4rem}header h1{font-size:1.05rem}}
+
+/* ── Dark Mode ───────────────────────────────────────── */
+[data-theme="dark"] body{background:#181418;color:#ede0d4}
+[data-theme="dark"] a{color:#ffd495}
+[data-theme="dark"] header{background:#0e0c0e;border-bottom-color:#da2f3a}
+[data-theme="dark"] .origin-bar{background:#1e1a1e;color:#c0b0a8;border-bottom:1px solid #302830}
+[data-theme="dark"] .tab-bar{background:#0a080a}
+[data-theme="dark"] .pane{background:transparent}
+[data-theme="dark"] .kpi{background:#242028;border-bottom-color:#302830;box-shadow:none}
+[data-theme="dark"] .kpi .num{color:#ede0d4}
+[data-theme="dark"] .kpi.red .num{color:#e05060}
+[data-theme="dark"] .kpi.orange .num{color:#d08090}
+[data-theme="dark"] .kpi.gold .num{color:#d4a040}
+[data-theme="dark"] .kpi .lbl{color:#8a7a80}
+[data-theme="dark"] .sec-hdr{background:#242028;color:#ede0d4;border-left-color:#da2f3a}
+[data-theme="dark"] .sec-body{background:#242028;box-shadow:none}
+[data-theme="dark"] .alert-card{background:#242028;border-left-color:#3a3040;box-shadow:none}
+[data-theme="dark"] .ac-hdr:hover{background:#2e2830}
+[data-theme="dark"] .ac-title{color:#ede0d4}
+[data-theme="dark"] .ac-meta{color:#8a7a80}
+[data-theme="dark"] .ac-body{color:#b0a0a8}
+[data-theme="dark"] .b-low{background:#302830;color:#a09098}
+[data-theme="dark"] .b-modhi{background:#6a5800;color:#ffd495}
+[data-theme="dark"] .b-impacted{background:#6a5800;color:#ffd495}
+[data-theme="dark"] .fdx-card{background:#242028;border-color:#302830}
+[data-theme="dark"] .fdx-card.fdx-card-delayed{background:#2a1820}
+[data-theme="dark"] .fdx-card.fdx-card-suspended{background:#2a1820}
+[data-theme="dark"] .fdx-card.fdx-card-impacted{background:#242010}
+[data-theme="dark"] table{color:#ede0d4}
+[data-theme="dark"] thead tr{background:#2e2830}
+[data-theme="dark"] th:hover{background:#3a3040}
+[data-theme="dark"] td{border-bottom-color:#302830}
+[data-theme="dark"] tr.even{background:#201c22}
+[data-theme="dark"] tr:hover td{background:#2a2430}
+[data-theme="dark"] tr.fdx-delayed td{background:#2a1820!important}
+[data-theme="dark"] tr.fdx-impacted td{background:#242010!important}
+[data-theme="dark"] .ctrl-bar{background:#201c22;border-bottom-color:#302830}
+[data-theme="dark"] .ctrl-bar input,[data-theme="dark"] .ctrl-bar select{background:#181418;border-color:#302830;color:#ede0d4}
+[data-theme="dark"] .ctrl-bar label{color:#8a7a80}
+[data-theme="dark"] .state-grid{background:#201c22}
+[data-theme="dark"] .sc.none{background:#2e2830;color:#6a6068}
+[data-theme="dark"] .bar-wrap{background:#242028}
+[data-theme="dark"] .bar-bg{background:#302830}
+[data-theme="dark"] .fedex-banner{background:#2e2830;color:#c0b0a8}
+[data-theme="dark"] .perishable-note{background:#261820;border-color:#a04040;color:#d4a0a0}
+[data-theme="dark"] .spinner{border-color:#302830;border-top-color:#da2f3a}
+[data-theme="dark"] .loading{color:#6a6068}
+[data-theme="dark"] .nodata{color:#6a6068}
+[data-theme="dark"] .disclaimer{color:#6a5a60}
+[data-theme="dark"] .ac-hdr:hover{background:#2e2830}
 </style>
 </head>
 <body>
@@ -143,7 +195,10 @@ td.center{text-align:center}
   </div>
   <div class="hdr-right">
     <div class="last-upd" id="lastUpdated">Loading...</div>
-    <button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="loadAll()">↻ Refresh</button>
+    <div style="display:flex;gap:6px;align-items:center;margin-top:4px">
+      <button class="dark-toggle" id="darkToggle" onclick="toggleDark()">🌙 Dark</button>
+      <button class="btn btn-ghost btn-sm" onclick="loadAll()">↻ Refresh</button>
+    </div>
   </div>
 </header>
 
@@ -416,6 +471,25 @@ function bn(n){return b(n,NOAA_B[n]||'b-low');}
 function bp(p){return b(p,PERI_CLR[p]||'b-low');}
 
 function periOfAbbr(abbr){return (TRANSIT[abbr]||{}).periRisk||'MODERATE';}
+
+// ═══ DARK MODE ═══════════════════════════════════════════
+(function(){
+  try{
+    if(localStorage.getItem('lm_dark')==='1') document.documentElement.setAttribute('data-theme','dark');
+  }catch(e){}
+})();
+function toggleDark(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  const btn=document.getElementById('darkToggle');
+  if(btn) btn.textContent=dark?'🌙 Dark':'☀️ Light';
+  try{localStorage.setItem('lm_dark',dark?'0':'1');}catch(e){}
+}
+document.addEventListener('DOMContentLoaded',function(){
+  const btn=document.getElementById('darkToggle');
+  if(!btn) return;
+  try{if(localStorage.getItem('lm_dark')==='1') btn.textContent='☀️ Light';}catch(e){}
+});
 
 // ═══ TABS ════════════════════════════════════════════════
 function showTab(t){
