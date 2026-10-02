@@ -247,8 +247,8 @@ td.center{text-align:center}
     <table>
       <thead><tr><th>Risk Level</th><th>FedEx Status</th><th>Interrup. Prob.</th><th>Transit from Chicago</th><th>Perishable Risk</th><th>Action</th></tr></thead>
       <tbody>
-        <tr><td><span class="badge b-high">HIGH</span></td><td><span class="badge b-delayed">IMPACT POSSIBLE</span></td><td>70–82%</td><td>1–4 days (Express 1–2 days)</td><td><span class="badge b-peri-crit">CRITICAL</span></td><td>Contact FedEx · Consider hold at facility · Alert customer</td></tr>
-        <tr class="even"><td><span class="badge b-modhi">MODERATE-HIGH</span></td><td><span class="badge b-impacted">IMPACT POSSIBLE</span></td><td>48–65%</td><td>1–3 days (Express O/N–1 day)</td><td><span class="badge b-peri-high">HIGH</span></td><td>Monitor FedEx ZIP tool · Proactive customer communication</td></tr>
+        <tr><td><span class="badge b-high">HIGH</span></td><td><span class="badge b-delayed">DELAY POSSIBLE</span></td><td>70–82%</td><td>1–4 days (Express 1–2 days)</td><td><span class="badge b-peri-crit">CRITICAL</span></td><td>Contact FedEx · Consider hold at facility · Alert customer</td></tr>
+        <tr class="even"><td><span class="badge b-modhi">MODERATE-HIGH</span></td><td><span class="badge b-impacted">DELAY POSSIBLE</span></td><td>48–65%</td><td>1–3 days (Express O/N–1 day)</td><td><span class="badge b-peri-high">HIGH</span></td><td>Monitor FedEx ZIP tool · Proactive customer communication</td></tr>
       </tbody>
     </table>
   </div>
@@ -404,8 +404,8 @@ const ZIP_DATA = [];
 
 // ═══ HELPERS ════════════════════════════════════════════
 const LVL_B={HIGH:'b-high','MODERATE-HIGH':'b-modhi',EXTREME:'b-extreme'};
-const STS_B={DELAYED:'b-delayed',IMPACTED:'b-delayed',SUSPENDED:'b-delayed','IMPACT POSSIBLE':'b-delayed','POSS. IMPACT':'b-delayed',MONITORING:'b-low'};
-const STS_LBL={DELAYED:'IMPACT POSSIBLE',IMPACTED:'IMPACT POSSIBLE',SUSPENDED:'IMPACT POSSIBLE','IMPACT POSSIBLE':'IMPACT POSSIBLE','POSS. IMPACT':'IMPACT POSSIBLE',MONITORING:'MONITORING'};
+const STS_B={DELAYED:'b-delayed',IMPACTED:'b-delayed',SUSPENDED:'b-delayed','IMPACT POSSIBLE':'b-delayed','POSS. IMPACT':'b-delayed','DELAY POSSIBLE':'b-delayed',MONITORING:'b-low'};
+const STS_LBL={DELAYED:'DELAY POSSIBLE',IMPACTED:'DELAY POSSIBLE',SUSPENDED:'DELAY POSSIBLE','IMPACT POSSIBLE':'DELAY POSSIBLE','POSS. IMPACT':'DELAY POSSIBLE','DELAY POSSIBLE':'DELAY POSSIBLE',MONITORING:'MONITORING'};
 const NOAA_B={ENHANCED:'b-enhanced',SLIGHT:'b-slight','SECONDARY-15':'b-secondary'};
 const BAR_C={HIGH:'#E26B0A','MODERATE-HIGH':'#F4B942',EXTREME:'#C00000'};
 
@@ -485,8 +485,8 @@ const hazardF=(document.getElementById('zip-hazard')||{}).value||'';
       return [r[0],r[1],r[2],r[3],
         sd.level||'MODERATE-HIGH',
         sd.weather||'Severe Weather',
-        sd.ground||'IMPACT POSSIBLE',
-        sd.express||'IMPACT POSSIBLE',
+        sd.ground||'DELAY POSSIBLE',
+        sd.express||'DELAY POSSIBLE',
         sd.start||'—', (sd.ends_iso&&sd.ends_iso.length>5)?fmtDt(sd.ends_iso):(sd.end||'—'),
         sd.pct||50, (TRANSIT[r[3]]||{}).chiGround||2,
         sd.note||''
@@ -711,11 +711,11 @@ function impactOf(sev,ev){
     e.includes('heavy snow')||e.includes('lake effect snow');
   const isTropical=e.includes('hurricane')||e.includes('tropical storm')||e.includes('typhoon');
   const isFire=e.includes('fire')||e.includes('red flag');
-  const isFlood=e.includes('flood');
+  const isFlood=e.includes('flash flood emergency');
   if(!isWinter&&!isTropical&&!isFire&&!isFlood)return{lbl:'LOW',status:'MONITORING',bc:'#ccc'};
-  if(sev==='Extreme')return{lbl:'EXTREME',status:'IMPACT POSSIBLE',bc:'#C00000'};
-  if(isWinter||isTropical||sev==='Severe')return{lbl:'HIGH',status:'IMPACT POSSIBLE',bc:'#E26B0A'};
-  return{lbl:'MODERATE-HIGH',status:'IMPACT POSSIBLE',bc:'#F4B942'};
+  if(sev==='Extreme')return{lbl:'EXTREME',status:'DELAY POSSIBLE',bc:'#C00000'};
+  if(isWinter||isTropical||sev==='Severe')return{lbl:'HIGH',status:'DELAY POSSIBLE',bc:'#E26B0A'};
+  return{lbl:'MODERATE-HIGH',status:'DELAY POSSIBLE',bc:'#F4B942'};
 }
 function xStates(a){
   const US=new Set('AL,AZ,AR,CA,CO,CT,DE,FL,GA,ID,IL,IN,IA,KS,KY,LA,ME,MD,MA,MI,MN,MS,MO,MT,NE,NV,NH,NJ,NM,NY,NC,ND,OH,OK,OR,PA,RI,SC,SD,TN,TX,UT,VT,VA,WA,WV,WI,WY,DC,AK,HI,PR'.split(','));
@@ -874,7 +874,7 @@ function isShippingAlert(weather){
     e.includes('ice storm')||e.includes('freezing rain')||e.includes('sleet')||
     e.includes('heavy snow')||e.includes('lake effect snow')||
     e.includes('hurricane')||e.includes('tropical storm')||e.includes('typhoon')||
-    e.includes('fire')||e.includes('red flag')||e.includes('flood');
+    e.includes('fire')||e.includes('red flag')||e.includes('flash flood emergency');
 }
 function loadAll(){
   // Purge expired STATE_DATA entries on every load/refresh
