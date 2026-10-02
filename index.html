@@ -322,19 +322,6 @@ td.center{text-align:center}
       <label>State:</label>
       <select id="zip-state" onchange="filterZips()">
         <option value="">All States</option></select>
-      <label>Service:</label>
-      <select id="zip-svc" onchange="filterZips()">
-        <option value="">Express + Ground</option>
-        <option value="express">Express Only</option>
-        <option value="ground">Ground Only</option>
-      </select>
-      <label>Perishable Risk:</label>
-      <select id="zip-peri" onchange="filterZips()">
-        <option value="">All</option>
-        <option value="CRITICAL">Critical</option>
-        <option value="HIGH">High</option>
-        <option value="MODERATE">Moderate</option>
-      </select>
       <label>Hazard:</label>
       <select id="zip-hazard" onchange="filterZips()">
         <option value="">All Hazards</option>
@@ -349,12 +336,9 @@ td.center{text-align:center}
           <th onclick="sortZips('abbr')">ST ↕</th>
           <th onclick="sortZips('level')">Risk Level ↕</th>
           <th>Weather Hazard</th>
-          <th onclick="sortZips('ground')">Ground ↕</th>
-          <th onclick="sortZips('express')">Express ↕</th>
           <th onclick="sortZips('chiGround')">CHI→Ground Days ↕</th>
           <th onclick="sortZips('chiExpress')">CHI→Express Days ↕</th>
           <th onclick="sortZips('pct')">Interrup % ↕</th>
-          <th onclick="sortZips('periRisk')">Perishable Risk ↕</th>
           <th onclick="sortZips('start')">Alert Start ↕</th>
           <th onclick="sortZips('end')">Alert End ↕</th>
           <th>Hub / Note</th>
@@ -508,8 +492,8 @@ function renderZipTable(data){
   filteredZips=data;
   document.getElementById('zip-count').textContent=`Showing ${data.length} of ${window._totalZipCount||data.length} ZIPs`;
   const tb=document.getElementById('zip-tbody');
-  if(!STATE_DATA.length){tb.innerHTML='<tr><td colspan="14" style="padding:20px;text-align:center;color:#107C41;font-weight:bold;">✅ No active severe weather alerts affecting Chicago-origin routes. ZIP data clears automatically when alerts expire.</td></tr>';return;}
-  if(!data.length){tb.innerHTML='<tr><td colspan="14" class="nodata">No ZIPs match filters.</td></tr>';return;}
+  if(!STATE_DATA.length){tb.innerHTML='<tr><td colspan="11" style="padding:20px;text-align:center;color:#107C41;font-weight:bold;">✅ No active severe weather alerts affecting Chicago-origin routes. ZIP data clears automatically when alerts expire.</td></tr>';return;}
+  if(!data.length){tb.innerHTML='<tr><td colspan="11" class="nodata">No ZIPs match filters.</td></tr>';return;}
   tb.innerHTML=data.map((r,i)=>{
     const pr=periFromRow(r);
     const gSts=r[6]||'';
@@ -521,11 +505,9 @@ function renderZipTable(data){
       <td>${r[1]}</td><td>${r[3]}</td>
       <td>${bl(r[4])}</td>
       <td style="font-size:0.7rem;max-width:180px">${r[5]}</td>
-      <td>${bs(r[6])}</td><td>${bs(r[7])}</td>
       <td class="center">${gDays(r)} day${gDays(r)===1?'':'s'}</td>
       <td class="center">${eDays(r)} day${eDays(r)===1?'':'s'}</td>
       <td class="center"><strong>${r[10]}%</strong></td>
-      <td>${bp(pr)}</td>
       <td style="white-space:nowrap;font-size:0.7rem">${r[8]}</td>
       <td style="white-space:nowrap;font-size:0.7rem">${r[9]}</td>
       <td class="td-note" title="${r[12]}" style="font-size:0.7rem">${r[12]}</td>
